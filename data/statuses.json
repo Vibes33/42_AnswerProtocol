@@ -1,0 +1,31 @@
+[
+  {
+    "id": "status.burn",
+    "name": "Burned",
+    "description": "Loses a bit of health every turn.",
+    "damage_percent": 6,
+    "default_duration": 3
+  },
+  {
+    "id": "status.poison",
+    "name": "Poisoned",
+    "description": "Loses health every turn, longer than a burn.",
+    "damage_percent": 8,
+    "default_duration": 4
+  },
+  {
+    "id": "status.sleep",
+    "name": "Asleep",
+    "description": "Cannot act. May wake up at the start of each turn.",
+    "skips_turn": true,
+    "wake_chance": 0.33,
+    "default_duration": 3
+  },
+  {
+    "id": "status.regen",
+    "name": "Regenerating",
+    "description": "Recovers health every turn.",
+    "heal_percent": 8,
+    "default_duration": 3
+  }
+]

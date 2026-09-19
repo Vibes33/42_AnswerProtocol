@@ -1,0 +1,356 @@
+[
+  {
+    "id": "move.strike",
+    "name": "Strike",
+    "description": "A plain blow anyone can throw. Costs nothing.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 20, "mana_cost": 0, "accuracy": 0.95,
+    "learn": { "level": 1 }
+  },
+
+  {
+    "id": "move.quick_shot",
+    "name": "Quick Shot",
+    "description": "A fast, reliable arrow.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 25, "mana_cost": 3, "accuracy": 1.0,
+    "learn": { "level": 1, "archetypes": ["arch.archer"] }
+  },
+  {
+    "id": "move.ember_arrow",
+    "name": "Ember Arrow",
+    "description": "A flaming arrow that may set the target alight.",
+    "type": "fire", "category": "physical", "target": "enemy",
+    "power": 30, "mana_cost": 6, "accuracy": 0.95,
+    "effects": [ { "kind": "status", "chance": 0.2, "status": "status.burn" } ],
+    "learn": { "level": 1, "archetypes": ["arch.archer"], "types": ["fire"] }
+  },
+  {
+    "id": "move.aqua_arrow",
+    "name": "Aqua Arrow",
+    "description": "An arrow wrapped in a spiralling jet of water.",
+    "type": "water", "category": "physical", "target": "enemy",
+    "power": 30, "mana_cost": 6, "accuracy": 0.95,
+    "learn": { "level": 1, "archetypes": ["arch.archer"], "types": ["water"] }
+  },
+  {
+    "id": "move.thorn_arrow",
+    "name": "Thorn Arrow",
+    "description": "A thorn-tipped arrow coated in sap. May poison.",
+    "type": "plant", "category": "physical", "target": "enemy",
+    "power": 30, "mana_cost": 6, "accuracy": 0.95,
+    "effects": [ { "kind": "status", "chance": 0.2, "status": "status.poison" } ],
+    "learn": { "level": 1, "archetypes": ["arch.archer"], "types": ["plant"] }
+  },
+  {
+    "id": "move.eagle_eye",
+    "name": "Eagle Eye",
+    "description": "Focus sharpens: speed and attack rise for a few turns.",
+    "type": "normal", "category": "status", "target": "self",
+    "power": 0, "mana_cost": 8, "accuracy": 1.0,
+    "effects": [
+      { "kind": "stat_mod", "chance": 1.0, "stat": "speed", "amount": 0.5, "duration": 3 },
+      { "kind": "stat_mod", "chance": 1.0, "stat": "attack", "amount": 0.25, "duration": 3 }
+    ],
+    "learn": { "level": 4, "archetypes": ["arch.archer"] }
+  },
+  {
+    "id": "move.flame_volley",
+    "name": "Flame Volley",
+    "description": "A rain of burning arrows on every enemy.",
+    "type": "fire", "category": "physical", "target": "all_enemies",
+    "power": 35, "mana_cost": 14, "accuracy": 0.9,
+    "effects": [ { "kind": "status", "chance": 0.1, "status": "status.burn" } ],
+    "learn": { "level": 8, "archetypes": ["arch.archer"], "types": ["fire"] }
+  },
+  {
+    "id": "move.phoenix_shot",
+    "name": "Phoenix Shot",
+    "description": "Pyra's signature: an arrow reborn as a blazing bird.",
+    "type": "fire", "category": "physical", "target": "enemy",
+    "power": 75, "mana_cost": 25, "accuracy": 0.9,
+    "effects": [ { "kind": "status", "chance": 0.5, "status": "status.burn" } ],
+    "learn": { "level": 12, "characters": ["char.pyra"] }
+  },
+
+  {
+    "id": "move.rock_smash",
+    "name": "Rock Smash",
+    "description": "A stone-hard punch.",
+    "type": "rock", "category": "physical", "target": "enemy",
+    "power": 35, "mana_cost": 4, "accuracy": 0.95,
+    "learn": { "level": 1, "archetypes": ["arch.fighter"], "types": ["rock"] }
+  },
+  {
+    "id": "move.flame_fist",
+    "name": "Flame Fist",
+    "description": "A burning punch that may leave a burn.",
+    "type": "fire", "category": "physical", "target": "enemy",
+    "power": 35, "mana_cost": 6, "accuracy": 0.95,
+    "effects": [ { "kind": "status", "chance": 0.15, "status": "status.burn" } ],
+    "learn": { "level": 1, "archetypes": ["arch.fighter"], "types": ["fire"] }
+  },
+  {
+    "id": "move.heavy_blow",
+    "name": "Heavy Blow",
+    "description": "A slow, crushing swing. Hits hard, misses sometimes.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 45, "mana_cost": 8, "accuracy": 0.85,
+    "learn": { "level": 5, "archetypes": ["arch.fighter"] }
+  },
+  {
+    "id": "move.stone_skin",
+    "name": "Stone Skin",
+    "description": "Hardens the body: defense rises sharply for a few turns.",
+    "type": "rock", "category": "status", "target": "self",
+    "power": 0, "mana_cost": 10, "accuracy": 1.0,
+    "effects": [ { "kind": "stat_mod", "chance": 1.0, "stat": "defense", "amount": 0.5, "duration": 3 } ],
+    "learn": { "level": 4, "archetypes": ["arch.fighter"], "types": ["rock"] }
+  },
+  {
+    "id": "move.war_cry",
+    "name": "War Cry",
+    "description": "A rallying roar that raises the whole party's attack.",
+    "type": "normal", "category": "status", "target": "all_allies",
+    "power": 0, "mana_cost": 12, "accuracy": 1.0,
+    "effects": [ { "kind": "stat_mod", "chance": 1.0, "stat": "attack", "amount": 0.3, "duration": 3 } ],
+    "learn": { "level": 6, "archetypes": ["arch.fighter"] }
+  },
+  {
+    "id": "move.quake_slam",
+    "name": "Quake Slam",
+    "description": "Pounds the ground, hitting every enemy.",
+    "type": "rock", "category": "physical", "target": "all_enemies",
+    "power": 50, "mana_cost": 18, "accuracy": 0.9,
+    "learn": { "level": 9, "archetypes": ["arch.fighter"], "types": ["rock"] }
+  },
+  {
+    "id": "move.mountain_breaker",
+    "name": "Mountain Breaker",
+    "description": "Borak's signature: an earth-splitting blow that leaves him briefly exposed.",
+    "type": "rock", "category": "physical", "target": "enemy",
+    "power": 85, "mana_cost": 28, "accuracy": 0.85,
+    "effects": [ { "kind": "stat_mod", "chance": 1.0, "target": "self", "stat": "defense", "amount": -0.2, "duration": 2 } ],
+    "learn": { "level": 12, "characters": ["char.borak"] }
+  },
+
+  {
+    "id": "move.siphon_strike",
+    "name": "Siphon Strike",
+    "description": "A light hit that draws energy back from the target.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 15, "mana_cost": 0, "accuracy": 0.95,
+    "effects": [ { "kind": "restore_mana", "chance": 1.0, "target": "self", "amount": 10 } ],
+    "learn": { "level": 3, "archetypes": ["arch.fighter", "arch.archer"] }
+  },
+
+  {
+    "id": "move.frost_bolt",
+    "name": "Frost Bolt",
+    "description": "A shard of ice that may numb the target to sleep.",
+    "type": "ice", "category": "magical", "target": "enemy",
+    "power": 35, "mana_cost": 8, "accuracy": 0.95,
+    "effects": [ { "kind": "status", "chance": 0.1, "status": "status.sleep" } ],
+    "learn": { "level": 1, "archetypes": ["arch.mage"], "types": ["ice"] }
+  },
+  {
+    "id": "move.fireball",
+    "name": "Fireball",
+    "description": "A roaring sphere of flame.",
+    "type": "fire", "category": "magical", "target": "enemy",
+    "power": 45, "mana_cost": 16, "accuracy": 0.9,
+    "effects": [ { "kind": "status", "chance": 0.25, "status": "status.burn" } ],
+    "learn": { "level": 1, "archetypes": ["arch.mage"], "types": ["fire"] }
+  },
+  {
+    "id": "move.water_jet",
+    "name": "Water Jet",
+    "description": "A pressurised stream of water.",
+    "type": "water", "category": "magical", "target": "enemy",
+    "power": 35, "mana_cost": 8, "accuracy": 0.95,
+    "learn": { "level": 1, "archetypes": ["arch.mage"], "types": ["water"] }
+  },
+  {
+    "id": "move.arcane_siphon",
+    "name": "Arcane Siphon",
+    "description": "A weak bolt that pulls mana back into the caster.",
+    "type": "normal", "category": "magical", "target": "enemy",
+    "power": 15, "mana_cost": 0, "accuracy": 1.0,
+    "effects": [ { "kind": "restore_mana", "chance": 1.0, "target": "self", "amount": 12 } ],
+    "learn": { "level": 3, "archetypes": ["arch.mage"] }
+  },
+  {
+    "id": "move.arcane_focus",
+    "name": "Arcane Focus",
+    "description": "Channels raw power: magic attack rises for a few turns.",
+    "type": "normal", "category": "status", "target": "self",
+    "power": 0, "mana_cost": 10, "accuracy": 1.0,
+    "effects": [ { "kind": "stat_mod", "chance": 1.0, "stat": "magic_attack", "amount": 0.5, "duration": 3 } ],
+    "learn": { "level": 4, "archetypes": ["arch.mage"] }
+  },
+  {
+    "id": "move.glacial_spike",
+    "name": "Glacial Spike",
+    "description": "A massive lance of ice.",
+    "type": "ice", "category": "magical", "target": "enemy",
+    "power": 60, "mana_cost": 20, "accuracy": 0.9,
+    "learn": { "level": 7, "archetypes": ["arch.mage"], "types": ["ice"] }
+  },
+  {
+    "id": "move.blizzard",
+    "name": "Blizzard",
+    "description": "A freezing storm over every enemy. May put them to sleep.",
+    "type": "ice", "category": "magical", "target": "all_enemies",
+    "power": 45, "mana_cost": 30, "accuracy": 0.85,
+    "effects": [ { "kind": "status", "chance": 0.15, "status": "status.sleep" } ],
+    "learn": { "level": 11, "archetypes": ["arch.mage"], "types": ["ice"] }
+  },
+  {
+    "id": "move.absolute_zero",
+    "name": "Absolute Zero",
+    "description": "Nivel's signature: stops all motion, and sometimes the target with it.",
+    "type": "ice", "category": "magical", "target": "enemy",
+    "power": 95, "mana_cost": 40, "accuracy": 0.85,
+    "effects": [ { "kind": "status", "chance": 0.3, "status": "status.sleep" } ],
+    "learn": { "level": 14, "characters": ["char.nivel"] }
+  },
+
+  {
+    "id": "move.vine_lash",
+    "name": "Vine Lash",
+    "description": "A whipping vine with poisonous thorns.",
+    "type": "plant", "category": "magical", "target": "enemy",
+    "power": 25, "mana_cost": 5, "accuracy": 0.95,
+    "effects": [ { "kind": "status", "chance": 0.2, "status": "status.poison" } ],
+    "learn": { "level": 1, "archetypes": ["arch.healer"] }
+  },
+  {
+    "id": "move.mend",
+    "name": "Mend",
+    "description": "Heals an ally for a third of their health.",
+    "type": "plant", "category": "status", "target": "ally",
+    "power": 0, "mana_cost": 12, "accuracy": 1.0,
+    "effects": [ { "kind": "heal_percent", "chance": 1.0, "amount": 35 } ],
+    "learn": { "level": 1, "archetypes": ["arch.healer"] }
+  },
+  {
+    "id": "move.purify",
+    "name": "Purify",
+    "description": "Cleanses an ally of every status ailment.",
+    "type": "plant", "category": "status", "target": "ally",
+    "power": 0, "mana_cost": 8, "accuracy": 1.0,
+    "effects": [ { "kind": "cure", "chance": 1.0 } ],
+    "learn": { "level": 3, "archetypes": ["arch.healer"] }
+  },
+  {
+    "id": "move.regrowth",
+    "name": "Regrowth",
+    "description": "Wraps an ally in healing sap that restores health each turn.",
+    "type": "plant", "category": "status", "target": "ally",
+    "power": 0, "mana_cost": 14, "accuracy": 1.0,
+    "effects": [ { "kind": "status", "chance": 1.0, "status": "status.regen" } ],
+    "learn": { "level": 5, "archetypes": ["arch.healer"] }
+  },
+  {
+    "id": "move.mana_bloom",
+    "name": "Mana Bloom",
+    "description": "A flower that releases mana into an ally.",
+    "type": "plant", "category": "status", "target": "ally",
+    "power": 0, "mana_cost": 6, "accuracy": 1.0,
+    "effects": [ { "kind": "restore_mana", "chance": 1.0, "amount": 20 } ],
+    "learn": { "level": 7, "archetypes": ["arch.healer"] }
+  },
+  {
+    "id": "move.barkskin",
+    "name": "Barkskin",
+    "description": "Covers the party in bark, raising both defenses.",
+    "type": "plant", "category": "status", "target": "all_allies",
+    "power": 0, "mana_cost": 16, "accuracy": 1.0,
+    "effects": [
+      { "kind": "stat_mod", "chance": 1.0, "stat": "defense", "amount": 0.3, "duration": 3 },
+      { "kind": "stat_mod", "chance": 1.0, "stat": "magic_defense", "amount": 0.3, "duration": 3 }
+    ],
+    "learn": { "level": 9, "archetypes": ["arch.healer"] }
+  },
+  {
+    "id": "move.sacred_grove",
+    "name": "Sacred Grove",
+    "description": "Sylve's signature: an ancient grove heals and regenerates the whole party.",
+    "type": "plant", "category": "status", "target": "all_allies",
+    "power": 0, "mana_cost": 35, "accuracy": 1.0,
+    "effects": [
+      { "kind": "heal_percent", "chance": 1.0, "amount": 40 },
+      { "kind": "status", "chance": 1.0, "status": "status.regen" }
+    ],
+    "learn": { "level": 12, "characters": ["char.sylve"] }
+  },
+
+  {
+    "id": "move.tackle",
+    "name": "Tackle",
+    "description": "Charges straight into the target.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 18, "mana_cost": 0, "accuracy": 0.95
+  },
+  {
+    "id": "move.acid_goo",
+    "name": "Acid Goo",
+    "description": "Spits corrosive slime. May poison.",
+    "type": "plant", "category": "magical", "target": "enemy",
+    "power": 20, "mana_cost": 0, "accuracy": 0.9,
+    "effects": [ { "kind": "status", "chance": 0.3, "status": "status.poison" } ]
+  },
+  {
+    "id": "move.bubble",
+    "name": "Bubble",
+    "description": "A burst of stinging bubbles.",
+    "type": "water", "category": "magical", "target": "enemy",
+    "power": 20, "mana_cost": 0, "accuracy": 0.95
+  },
+  {
+    "id": "move.pinch",
+    "name": "Pinch",
+    "description": "A crushing claw.",
+    "type": "rock", "category": "physical", "target": "enemy",
+    "power": 25, "mana_cost": 0, "accuracy": 0.9
+  },
+  {
+    "id": "move.shell_guard",
+    "name": "Shell Guard",
+    "description": "Retreats into its shell, raising defense.",
+    "type": "rock", "category": "status", "target": "self",
+    "power": 0, "mana_cost": 0, "accuracy": 1.0,
+    "effects": [ { "kind": "stat_mod", "chance": 1.0, "stat": "defense", "amount": 0.5, "duration": 2 } ]
+  },
+  {
+    "id": "move.ember",
+    "name": "Ember",
+    "description": "A small lick of flame. May burn.",
+    "type": "fire", "category": "magical", "target": "enemy",
+    "power": 22, "mana_cost": 0, "accuracy": 0.95,
+    "effects": [ { "kind": "status", "chance": 0.2, "status": "status.burn" } ]
+  },
+  {
+    "id": "move.body_slam",
+    "name": "Body Slam",
+    "description": "Crushes the target under its whole weight.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 40, "mana_cost": 0, "accuracy": 0.9
+  },
+  {
+    "id": "move.royal_ooze",
+    "name": "Royal Ooze",
+    "description": "The Blob King's signature: a wave of toxic slime over everyone.",
+    "type": "plant", "category": "magical", "target": "all_enemies",
+    "power": 45, "mana_cost": 0, "accuracy": 0.85,
+    "effects": [ { "kind": "status", "chance": 0.4, "status": "status.poison" } ]
+  },
+  {
+    "id": "move.reform",
+    "name": "Reform",
+    "description": "Pulls its scattered jelly back together.",
+    "type": "plant", "category": "status", "target": "self",
+    "power": 0, "mana_cost": 0, "accuracy": 1.0,
+    "effects": [ { "kind": "heal_percent", "chance": 1.0, "amount": 15 } ]
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "types": [
+    { "id": "normal", "name": "Normal", "description": "No elemental affinity." },
+    { "id": "fire", "name": "Fire", "description": "Burns plants and melts ice, but fizzles on stone and water." },
+    { "id": "ice", "name": "Ice", "description": "Freezes plants and cracks stone, but melts against fire." },
+    { "id": "plant", "name": "Plant", "description": "Drinks water and splits rock, but burns easily." },
+    { "id": "rock", "name": "Rock", "description": "Smothers fire and shatters ice, but erodes under water and roots." },
+    { "id": "water", "name": "Water", "description": "Douses fire and wears down rock, but feeds plants." }
+  ],
+  "effectiveness": {
+    "normal": { "rock": 0.5 },
+    "fire":   { "plant": 2, "ice": 2, "fire": 0.5, "rock": 0.5, "water": 0.5 },
+    "ice":    { "plant": 2, "rock": 2, "fire": 0.5, "ice": 0.5, "water": 0.5 },
+    "plant":  { "water": 2, "rock": 2, "fire": 0.5, "plant": 0.5 },
+    "rock":   { "fire": 2, "ice": 2, "rock": 0.5 },
+    "water":  { "fire": 2, "rock": 2, "plant": 0.5, "water": 0.5 }
+  }
+}

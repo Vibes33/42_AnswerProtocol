@@ -1,0 +1,96 @@
+[
+  {
+    "id": "loc.village_square",
+    "name": "Village Square",
+    "description": "A bustling square with cobblestone paths. A notice board stands by the well.",
+    "zone": "zone.village",
+    "safe": true,
+    "exits": { "north": "loc.tavern", "east": "loc.market", "west": "loc.chapel", "south": "loc.south_gate" },
+    "items": [ { "item": "item.notice_board", "count": 1 } ],
+    "npcs": ["npc.guard", "npc.mentor"]
+  },
+  {
+    "id": "loc.tavern",
+    "name": "The Prancing Pony",
+    "description": "A cozy tavern filled with warmth and laughter.",
+    "zone": "zone.village",
+    "safe": true,
+    "exits": { "south": "loc.village_square", "west": "loc.elder_house", "southeast": "loc.market" },
+    "items": [ { "item": "item.frothy_ale", "count": 2 } ],
+    "npcs": ["npc.innkeeper", "npc.bard"]
+  },
+  {
+    "id": "loc.market",
+    "name": "Market Street",
+    "description": "Stalls lined with goods and supplies.",
+    "zone": "zone.village",
+    "safe": true,
+    "exits": { "west": "loc.village_square", "northwest": "loc.tavern" },
+    "npcs": ["npc.merchant"]
+  },
+  {
+    "id": "loc.chapel",
+    "name": "Village Chapel",
+    "description": "A quiet stone chapel smelling of incense.",
+    "zone": "zone.village",
+    "safe": true,
+    "exits": { "east": "loc.village_square", "north": "loc.elder_house" },
+    "npcs": ["npc.priestess"]
+  },
+  {
+    "id": "loc.elder_house",
+    "name": "Elder's House",
+    "description": "A cluttered home full of maps and old books.",
+    "zone": "zone.village",
+    "safe": true,
+    "exits": { "south": "loc.chapel", "east": "loc.tavern" },
+    "npcs": ["npc.elder"]
+  },
+  {
+    "id": "loc.south_gate",
+    "name": "South Gate",
+    "description": "A wooden gate opening onto the plains.",
+    "zone": "zone.village",
+    "safe": true,
+    "exits": { "north": "loc.village_square", "south": "loc.green_plains" },
+    "npcs": ["npc.gate_warden"]
+  },
+  {
+    "id": "loc.green_plains",
+    "name": "Green Plains",
+    "description": "Tall grass sways in the wind. Something wobbles nearby.",
+    "zone": "zone.verdant_plains",
+    "exits": { "north": "loc.south_gate", "east": "loc.misty_pond", "south": "loc.forest_edge" },
+    "items": [ { "item": "item.healing_herb", "count": 2 } ],
+    "monsters": [ { "monster": "mob.green_blob", "count": 2, "respawn_seconds": 60 } ]
+  },
+  {
+    "id": "loc.misty_pond",
+    "name": "Misty Pond",
+    "description": "A still pond wrapped in fog.",
+    "zone": "zone.verdant_plains",
+    "exits": { "west": "loc.green_plains", "southwest": "loc.forest_edge" },
+    "items": [ { "item": "item.healing_herb", "count": 1 } ],
+    "monsters": [ { "monster": "mob.blue_blob", "count": 1, "respawn_seconds": 60 } ]
+  },
+  {
+    "id": "loc.forest_edge",
+    "name": "Forest Edge",
+    "description": "The plains end at a dark line of trees. A slimy trail leads west.",
+    "zone": "zone.verdant_plains",
+    "exits": { "north": "loc.green_plains", "northeast": "loc.misty_pond", "west": "loc.blob_hollow" },
+    "monsters": [
+      { "monster": "mob.pebble_crab", "count": 1, "respawn_seconds": 90 },
+      { "monster": "mob.ember_wisp", "count": 1, "respawn_seconds": 90 },
+      { "monster": "mob.green_blob", "count": 1, "respawn_seconds": 60 }
+    ]
+  },
+  {
+    "id": "loc.blob_hollow",
+    "name": "Blob Hollow",
+    "description": "A damp hollow coated in slime. Something enormous breathes in the dark.",
+    "zone": "zone.verdant_plains",
+    "exits": { "east": "loc.forest_edge" },
+    "monsters": [ { "monster": "mob.blob_king", "count": 1, "respawn_seconds": 300 } ]
+  }
+]

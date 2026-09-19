@@ -1,0 +1,29 @@
+{
+  "start_room": "loc.village_square",
+  "respawn_room": "loc.village_square",
+  "respawn_hp_percent": 50,
+  "default_character": "char.borak",
+  "max_players": 4,
+  "leveling": {
+    "max_level": 20,
+    "xp_base": 50,
+    "xp_per_level": 25
+  },
+  "combat": {
+    "max_equipped_moves": 3,
+    "rest_mana_regen": 15,
+    "stab_multiplier": 1.5,
+    "crit_chance": 0.05,
+    "crit_multiplier": 1.5,
+    "refill_mana_after_combat": true
+  },
+  "inventory": {
+    "equipment_slots": ["weapon", "armor", "accessory"],
+    "bag_capacity": 20
+  },
+  "economy": {
+    "starting_gold": 20,
+    "sell_ratio": 0.5,
+    "death_gold_loss_percent": 10
+  }
+}

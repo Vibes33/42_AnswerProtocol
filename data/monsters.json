@@ -1,0 +1,78 @@
+[
+  {
+    "id": "mob.green_blob",
+    "name": "Green Blob",
+    "description": "A quivering mound of green slime.",
+    "type": "plant",
+    "level": 2,
+    "stats": { "hp": 35, "mana": 10, "attack": 8, "defense": 6, "magic_attack": 7, "magic_defense": 6, "speed": 6 },
+    "moves": ["move.tackle", "move.acid_goo"],
+    "xp": 12,
+    "gold": 3,
+    "drops": [
+      { "item": "item.blob_jelly", "chance": 0.6, "min": 1, "max": 2 },
+      { "item": "item.healing_herb", "chance": 0.25, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.blue_blob",
+    "name": "Blue Blob",
+    "description": "A watery blob that sloshes when it moves.",
+    "type": "water",
+    "level": 3,
+    "stats": { "hp": 40, "mana": 10, "attack": 7, "defense": 7, "magic_attack": 10, "magic_defense": 8, "speed": 7 },
+    "moves": ["move.tackle", "move.bubble"],
+    "xp": 15,
+    "gold": 4,
+    "drops": [
+      { "item": "item.blob_jelly", "chance": 0.6, "min": 1, "max": 2 },
+      { "item": "item.minor_potion", "chance": 0.15, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.pebble_crab",
+    "name": "Pebble Crab",
+    "description": "A crab whose shell is a lump of granite.",
+    "type": "rock",
+    "level": 4,
+    "stats": { "hp": 50, "mana": 10, "attack": 12, "defense": 16, "magic_attack": 4, "magic_defense": 8, "speed": 5 },
+    "moves": ["move.pinch", "move.shell_guard"],
+    "xp": 22,
+    "gold": 6,
+    "drops": [
+      { "item": "item.minor_potion", "chance": 0.3, "min": 1, "max": 1 },
+      { "item": "item.antidote", "chance": 0.2, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.ember_wisp",
+    "name": "Ember Wisp",
+    "description": "A floating spark that drifts between the trees.",
+    "type": "fire",
+    "level": 4,
+    "stats": { "hp": 30, "mana": 20, "attack": 5, "defense": 6, "magic_attack": 14, "magic_defense": 10, "speed": 14 },
+    "moves": ["move.ember", "move.tackle"],
+    "xp": 18,
+    "gold": 5,
+    "drops": [
+      { "item": "item.ether", "chance": 0.2, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.blob_king",
+    "name": "Blob King",
+    "description": "An enormous crowned blob, ruler of every slime in the plains.",
+    "boss": true,
+    "type": "plant",
+    "level": 6,
+    "stats": { "hp": 220, "mana": 50, "attack": 16, "defense": 12, "magic_attack": 18, "magic_defense": 12, "speed": 7 },
+    "moves": ["move.body_slam", "move.acid_goo", "move.royal_ooze", "move.reform"],
+    "xp": 150,
+    "gold": 60,
+    "drops": [
+      { "item": "item.royal_jelly", "chance": 1.0, "min": 1, "max": 1 },
+      { "item": "item.potion", "chance": 1.0, "min": 2, "max": 2 }
+    ],
+    "dialogue": ["WHO DARES ENTER MY HOLLOW?"]
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "id": "char.pyra",
+    "name": "Pyra",
+    "description": "A sharp-eyed archer whose arrows burst into flame.",
+    "archetype": "arch.archer",
+    "type": "fire",
+    "starting_items": [
+      { "item": "item.short_bow", "count": 1 },
+      { "item": "item.minor_potion", "count": 2 }
+    ]
+  },
+  {
+    "id": "char.borak",
+    "name": "Borak",
+    "description": "A mountain-born brawler with skin as hard as granite.",
+    "archetype": "arch.fighter",
+    "type": "rock",
+    "starting_items": [
+      { "item": "item.wooden_sword", "count": 1 },
+      { "item": "item.minor_potion", "count": 2 }
+    ]
+  },
+  {
+    "id": "char.nivel",
+    "name": "Nivel",
+    "description": "A quiet scholar of the frozen arts.",
+    "archetype": "arch.mage",
+    "type": "ice",
+    "starting_items": [
+      { "item": "item.oak_staff", "count": 1 },
+      { "item": "item.ether", "count": 1 }
+    ]
+  },
+  {
+    "id": "char.sylve",
+    "name": "Sylve",
+    "description": "A gentle druid who speaks with the forest.",
+    "archetype": "arch.healer",
+    "type": "plant",
+    "starting_items": [
+      { "item": "item.oak_staff", "count": 1 },
+      { "item": "item.minor_potion", "count": 2 }
+    ]
+  }
+]

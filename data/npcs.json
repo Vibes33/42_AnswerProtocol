@@ -1,0 +1,74 @@
+[
+  {
+    "id": "npc.guard",
+    "name": "Village Guard",
+    "description": "A stern-looking guard watching over the square.",
+    "roles": ["dialogue"],
+    "dialogue": ["Stay safe, traveler.", "The roads south get dangerous past the gate."]
+  },
+  {
+    "id": "npc.mentor",
+    "name": "Master Kael",
+    "description": "A retired adventurer who trains newcomers.",
+    "roles": ["dialogue", "service"],
+    "dialogue": ["Every hero starts somewhere. Tell me which path you walk.", "Archer, fighter, mage or healer: each needs the others."],
+    "service": { "kind": "class_select", "price": 0 }
+  },
+  {
+    "id": "npc.innkeeper",
+    "name": "Marta",
+    "description": "The cheerful owner of the Prancing Pony.",
+    "roles": ["dialogue", "service", "quest_giver"],
+    "dialogue": ["A bed and a hot meal? Five coins and you'll be good as new.", "Bram at the gate hasn't had a drink all week, poor man."],
+    "service": { "kind": "restore", "price": 5 },
+    "quests": ["quest.ale_delivery"]
+  },
+  {
+    "id": "npc.bard",
+    "name": "Tomlin the Bard",
+    "description": "A lute player who knows every rumour in town.",
+    "roles": ["dialogue"],
+    "dialogue": ["They say a king of slime rules the hollow west of the forest edge.", "Fire melts ice, water drowns fire... every child knows the song."]
+  },
+  {
+    "id": "npc.merchant",
+    "name": "Oswin",
+    "description": "A friendly merchant eager to trade.",
+    "roles": ["dialogue", "merchant"],
+    "dialogue": ["Welcome to my shop!", "Potions, blades, bows, staves. I buy blob jelly too."],
+    "shop": [
+      { "item": "item.minor_potion" },
+      { "item": "item.potion" },
+      { "item": "item.ether" },
+      { "item": "item.antidote" },
+      { "item": "item.wooden_sword" },
+      { "item": "item.short_bow" },
+      { "item": "item.oak_staff" },
+      { "item": "item.leather_armor" },
+      { "item": "item.iron_sword" }
+    ]
+  },
+  {
+    "id": "npc.priestess",
+    "name": "Sister Liora",
+    "description": "A priestess tending the village chapel.",
+    "roles": ["dialogue", "quest_giver"],
+    "dialogue": ["The light keeps us all.", "Our herb stores are empty. The plains past the gate are full of them."],
+    "quests": ["quest.herb_gathering"]
+  },
+  {
+    "id": "npc.elder",
+    "name": "Elder Rowan",
+    "description": "The village elder, old but sharp-eyed.",
+    "roles": ["dialogue", "quest_giver"],
+    "dialogue": ["Blobs have been creeping closer to the village every night.", "Something commands them. Something big."],
+    "quests": ["quest.blob_menace", "quest.blob_king"]
+  },
+  {
+    "id": "npc.gate_warden",
+    "name": "Gate Warden Bram",
+    "description": "A tired warden guarding the southern gate.",
+    "roles": ["dialogue"],
+    "dialogue": ["Beyond this gate lie the Verdant Plains. Mind the blobs.", "I'd kill for a cold ale."]
+  }
+]

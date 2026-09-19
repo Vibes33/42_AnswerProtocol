@@ -1,0 +1,14 @@
+[
+  {
+    "id": "zone.village",
+    "name": "Oakhollow Village",
+    "description": "A peaceful village. No fighting within its walls.",
+    "recommended_level": 1
+  },
+  {
+    "id": "zone.verdant_plains",
+    "name": "Verdant Plains",
+    "description": "Rolling grassland south of the village, overrun by blobs.",
+    "recommended_level": 2
+  }
+]

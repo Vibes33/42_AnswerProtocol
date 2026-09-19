@@ -1,0 +1,38 @@
+[
+  {
+    "id": "arch.archer",
+    "name": "Archer",
+    "description": "Fast ranged fighter. Cheap, precise physical attacks; weak spells.",
+    "allowed_types": ["fire", "water", "plant"],
+    "mana_cost_multiplier": 0.8,
+    "base_stats": { "hp": 100, "mana": 40, "attack": 14, "defense": 9, "magic_attack": 8, "magic_defense": 8, "speed": 15 },
+    "growth_per_level": { "hp": 7, "mana": 3, "attack": 3, "defense": 1, "magic_attack": 1, "magic_defense": 1, "speed": 2 }
+  },
+  {
+    "id": "arch.fighter",
+    "name": "Fighter",
+    "description": "Sturdy melee warrior. Powerful physical blows, very low mana costs.",
+    "allowed_types": ["rock", "fire", "normal"],
+    "mana_cost_multiplier": 0.7,
+    "base_stats": { "hp": 100, "mana": 30, "attack": 16, "defense": 14, "magic_attack": 5, "magic_defense": 9, "speed": 9 },
+    "growth_per_level": { "hp": 10, "mana": 2, "attack": 3, "defense": 3, "magic_attack": 0, "magic_defense": 1, "speed": 1 }
+  },
+  {
+    "id": "arch.mage",
+    "name": "Mage",
+    "description": "Elemental caster. Devastating spells that drain a lot of mana.",
+    "allowed_types": ["ice", "fire", "water"],
+    "mana_cost_multiplier": 1.0,
+    "base_stats": { "hp": 100, "mana": 80, "attack": 6, "defense": 7, "magic_attack": 18, "magic_defense": 12, "speed": 11 },
+    "growth_per_level": { "hp": 5, "mana": 6, "attack": 0, "defense": 1, "magic_attack": 4, "magic_defense": 2, "speed": 1 }
+  },
+  {
+    "id": "arch.healer",
+    "name": "Healer",
+    "description": "Support caster. Heals, cleanses and shields allies, with a little damage.",
+    "allowed_types": ["plant"],
+    "mana_cost_multiplier": 1.0,
+    "base_stats": { "hp": 100, "mana": 70, "attack": 7, "defense": 10, "magic_attack": 12, "magic_defense": 14, "speed": 10 },
+    "growth_per_level": { "hp": 6, "mana": 5, "attack": 1, "defense": 2, "magic_attack": 2, "magic_defense": 3, "speed": 1 }
+  }
+]

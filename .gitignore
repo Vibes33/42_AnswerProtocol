@@ -1,0 +1,9 @@
+bin/
+*.test
+*.out
+*.log
+coverage.*
+
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,36 @@
+[
+  {
+    "id": "quest.herb_gathering",
+    "name": "Herbs for the Chapel",
+    "description": "Bring 3 Healing Herbs to Sister Liora.",
+    "giver": "npc.priestess",
+    "objective": { "kind": "fetch", "target": "item.healing_herb", "count": 3 },
+    "reward": { "xp": 40, "gold": 15, "items": [ { "item": "item.potion", "count": 2 } ] }
+  },
+  {
+    "id": "quest.ale_delivery",
+    "name": "A Drink for Bram",
+    "description": "Deliver a Frothy Ale to Gate Warden Bram.",
+    "giver": "npc.innkeeper",
+    "objective": { "kind": "deliver", "target": "item.frothy_ale", "count": 1, "turn_in": "npc.gate_warden" },
+    "reward": { "xp": 20, "gold": 10 }
+  },
+  {
+    "id": "quest.blob_menace",
+    "name": "The Blob Menace",
+    "description": "Defeat 3 Green Blobs in the Verdant Plains.",
+    "giver": "npc.elder",
+    "objective": { "kind": "defeat", "target": "mob.green_blob", "count": 3 },
+    "reward": { "xp": 60, "gold": 20, "items": [ { "item": "item.leather_armor", "count": 1 } ] }
+  },
+  {
+    "id": "quest.blob_king",
+    "name": "Long Live the King",
+    "description": "Defeat the Blob King in Blob Hollow.",
+    "giver": "npc.elder",
+    "level_required": 4,
+    "prerequisites": ["quest.blob_menace"],
+    "objective": { "kind": "defeat", "target": "mob.blob_king", "count": 1 },
+    "reward": { "xp": 200, "gold": 100, "items": [ { "item": "item.iron_sword", "count": 1 } ] }
+  }
+]

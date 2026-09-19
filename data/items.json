@@ -1,0 +1,105 @@
+[
+  {
+    "id": "item.minor_potion",
+    "name": "Minor Potion",
+    "description": "A small red vial. Restores 30 HP.",
+    "category": "consumable", "rarity": "common", "obtainable": true, "price": 10,
+    "usable_in_combat": true,
+    "effects": [ { "kind": "heal", "chance": 1.0, "amount": 30 } ]
+  },
+  {
+    "id": "item.potion",
+    "name": "Potion",
+    "description": "A full bottle of healing draught. Restores 70 HP.",
+    "category": "consumable", "rarity": "uncommon", "obtainable": true, "price": 25,
+    "usable_in_combat": true,
+    "effects": [ { "kind": "heal", "chance": 1.0, "amount": 70 } ]
+  },
+  {
+    "id": "item.ether",
+    "name": "Ether",
+    "description": "A shimmering blue tonic. Restores 30 mana.",
+    "category": "consumable", "rarity": "uncommon", "obtainable": true, "price": 30,
+    "usable_in_combat": true,
+    "effects": [ { "kind": "restore_mana", "chance": 1.0, "amount": 30 } ]
+  },
+  {
+    "id": "item.antidote",
+    "name": "Antidote",
+    "description": "A bitter herbal mix that cures poison.",
+    "category": "consumable", "rarity": "common", "obtainable": true, "price": 8,
+    "usable_in_combat": true,
+    "effects": [ { "kind": "cure", "chance": 1.0, "status": "status.poison" } ]
+  },
+  {
+    "id": "item.healing_herb",
+    "name": "Healing Herb",
+    "description": "A fragrant leaf. Restores a little health, and the chapel needs them.",
+    "category": "material", "rarity": "common", "obtainable": true, "price": 3,
+    "usable_in_combat": true,
+    "effects": [ { "kind": "heal", "chance": 1.0, "amount": 10 } ]
+  },
+  {
+    "id": "item.frothy_ale",
+    "name": "Frothy Ale",
+    "description": "A refreshing drink from the Prancing Pony.",
+    "category": "consumable", "rarity": "common", "obtainable": true, "price": 4,
+    "effects": [ { "kind": "heal", "chance": 1.0, "amount": 5 } ]
+  },
+  {
+    "id": "item.blob_jelly",
+    "name": "Blob Jelly",
+    "description": "A wobbly lump left behind by a blob. Merchants buy it.",
+    "category": "material", "rarity": "common", "obtainable": true, "price": 5
+  },
+  {
+    "id": "item.wooden_sword",
+    "name": "Wooden Sword",
+    "description": "A training blade. Better than bare fists.",
+    "category": "equipment", "rarity": "common", "obtainable": true, "price": 20,
+    "equipment": { "slot": "weapon", "bonus": { "attack": 4 }, "archetypes": ["arch.fighter"] }
+  },
+  {
+    "id": "item.iron_sword",
+    "name": "Iron Sword",
+    "description": "A proper steel-edged sword. Too heavy for novices.",
+    "category": "equipment", "rarity": "uncommon", "obtainable": true, "price": 90,
+    "level_required": 5,
+    "equipment": { "slot": "weapon", "bonus": { "attack": 10 }, "archetypes": ["arch.fighter"] }
+  },
+  {
+    "id": "item.short_bow",
+    "name": "Short Bow",
+    "description": "A light hunting bow.",
+    "category": "equipment", "rarity": "common", "obtainable": true, "price": 20,
+    "equipment": { "slot": "weapon", "bonus": { "attack": 4, "speed": 1 }, "archetypes": ["arch.archer"] }
+  },
+  {
+    "id": "item.oak_staff",
+    "name": "Oak Staff",
+    "description": "A carved staff that focuses magic.",
+    "category": "equipment", "rarity": "common", "obtainable": true, "price": 20,
+    "equipment": { "slot": "weapon", "bonus": { "magic_attack": 4, "mana": 5 }, "archetypes": ["arch.mage", "arch.healer"] }
+  },
+  {
+    "id": "item.leather_armor",
+    "name": "Leather Armor",
+    "description": "Sturdy boiled leather. Fits anyone.",
+    "category": "equipment", "rarity": "common", "obtainable": true, "price": 30,
+    "equipment": { "slot": "armor", "bonus": { "defense": 4, "magic_defense": 2 } }
+  },
+  {
+    "id": "item.royal_jelly",
+    "name": "Royal Jelly",
+    "description": "A glowing gem of jelly from the Blob King's crown.",
+    "category": "equipment", "rarity": "rare", "obtainable": true, "price": 0,
+    "level_required": 4,
+    "equipment": { "slot": "accessory", "bonus": { "hp": 20, "mana": 10 } }
+  },
+  {
+    "id": "item.notice_board",
+    "name": "Notice Board",
+    "description": "Pinned notes: 'Blobs spotted in the plains. See the Elder.'",
+    "category": "fixture", "rarity": "common", "obtainable": false, "price": 0
+  }
+]
