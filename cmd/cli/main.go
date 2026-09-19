@@ -9,6 +9,8 @@ import (
 	"os"    // stdin, exit
 )
 
+const serverFull = "ERR 900 SERVER_FULL"
+
 func main() {
 	addr := flag.String("addr", "localhost:4242", "server address")
 	flag.Parse()
@@ -22,7 +24,12 @@ func main() {
 	go func() {
 		scanner := bufio.NewScanner(conn)
 		for scanner.Scan() {
-			fmt.Printf("\r< %s\n> ", scanner.Text())
+			line := scanner.Text()
+			if line == serverFull {
+				fmt.Println("\rServeur plein : le nombre maximum de joueurs est atteint")
+				os.Exit(1)
+			}
+			fmt.Printf("\r< %s\n> ", line)
 		}
 		fmt.Println("\nconnection closed")
 		os.Exit(0)

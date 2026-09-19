@@ -36,6 +36,12 @@ _TODO: list every deviation from or extension to RFC 42TAP and justify it.
 Extensions never remove or rename RFC response fields, never require non-RFC commands to play,
 and can be disabled with the server's strict mode._
 
+- **Connection limit.** The server accepts at most `max_players` simultaneous clients
+  (`data/game.json`, default 4; `0` means unlimited). A client connecting while the server is full
+  receives `ERR 900 SERVER_FULL` instead of the `OK hello proto=1` greeting, and the connection is
+  closed. RFC 42TAP defines no limit and no dedicated code; `900` is reused because it already means
+  "connection establishment failed", so any RFC client treats it as a fatal connection error.
+
 ## Combat System
 
 _TODO: turn-based mechanics, initiative order, damage formulas, counterattacks, respawn rules,
@@ -68,7 +74,11 @@ how to monitor the server and detect abuse (command flooding, rapid reconnection
 | `make test` | Run tests with the race detector |
 | `make clean` | Remove build artifacts and caches |
 
-Extra arguments can be passed with `ARGS`, e.g. `make run-server ARGS="-world data/world.yaml"`.
+Extra arguments can be passed with `ARGS`, e.g. `make run-server ARGS="-data path/to/world"`.
+
+The server loads every JSON file of the world directory (`-data`, default `data/`) at startup and
+validates all cross-references. If the world is invalid, it prints every problem found and exits
+with status 1 instead of starting.
 
 ## Testing
 
