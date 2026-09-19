@@ -1,7 +1,5 @@
 package world
 
-// World holds every static definition loaded from the data directory.
-// It is never mutated after loading, so any goroutine may read it without locking.
 type World struct {
 	Config     GameConfig
 	Types      TypeChart

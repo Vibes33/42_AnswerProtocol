@@ -29,8 +29,6 @@ const (
 	SlotAccessory EquipSlot = "accessory"
 )
 
-// Item is a definition. Each copy placed in the world becomes a separate runtime instance.
-// Price 0 means the item cannot be bought or sold.
 type Item struct {
 	ID             string       `json:"id"`
 	Name           string       `json:"name"`
@@ -45,7 +43,6 @@ type Item struct {
 	Equipment      *Equipment   `json:"equipment,omitempty"`
 }
 
-// Equipment gives a permanent stat bonus while worn. An empty Archetypes list means any class.
 type Equipment struct {
 	Slot       EquipSlot `json:"slot"`
 	Bonus      Stats     `json:"bonus"`

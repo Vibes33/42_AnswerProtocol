@@ -8,9 +8,6 @@ type Zone struct {
 	RecommendedLevel int    `json:"recommended_level"`
 }
 
-// Room is a definition. Items, NPCs and Monsters describe the initial population only;
-// what is in the room at runtime lives in the game state.
-// A Safe room forbids combat and is a valid respawn point.
 type Room struct {
 	ID          string            `json:"id"`
 	Name        string            `json:"name"`
@@ -23,7 +20,6 @@ type Room struct {
 	Monsters    []MonsterSpawn    `json:"monsters,omitempty"`
 }
 
-// MonsterSpawn places Count instances of a monster. RespawnSeconds 0 means it never comes back once defeated.
 type MonsterSpawn struct {
 	Monster        string `json:"monster"`
 	Count          int    `json:"count"`

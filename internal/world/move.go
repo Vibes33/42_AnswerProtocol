@@ -10,8 +10,6 @@ const (
 	MoveStatus   MoveCategory = "status"
 )
 
-// Move is an entry of the global attack pool, usable by players and NPCs.
-// A nil Learn rule means the move is reserved to NPCs.
 type Move struct {
 	ID          string       `json:"id"`
 	Name        string       `json:"name"`

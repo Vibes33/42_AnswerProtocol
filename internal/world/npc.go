@@ -11,8 +11,6 @@ const (
 	RoleService    NPCRole = "service"
 )
 
-// NPC is a peaceful character. Hostile creatures are Monsters.
-// Optional blocks (Quests, Shop, Service) are only set for the matching roles.
 type NPC struct {
 	ID          string      `json:"id"`
 	Name        string      `json:"name"`
@@ -28,7 +26,6 @@ func (n *NPC) HasRole(r NPCRole) bool {
 	return slices.Contains(n.Roles, r)
 }
 
-// ShopEntry lists an item a merchant sells. Price 0 means the item's base price.
 type ShopEntry struct {
 	Item  string `json:"item"`
 	Price int    `json:"price,omitempty"`

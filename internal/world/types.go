@@ -13,8 +13,6 @@ type TypeChart struct {
 	Effectiveness map[Element]map[Element]float64 `json:"effectiveness"`
 }
 
-// Multiplier returns the damage factor of an attack type against a defender type.
-// Pairs absent from the chart are neutral (1.0).
 func (c *TypeChart) Multiplier(attack, defender Element) float64 {
 	if m, ok := c.Effectiveness[attack][defender]; ok {
 		return m

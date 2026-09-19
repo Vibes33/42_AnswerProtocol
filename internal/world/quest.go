@@ -19,8 +19,6 @@ type Quest struct {
 	Reward        Reward    `json:"reward"`
 }
 
-// Objective targets an item id (fetch, deliver) or a monster id (defeat).
-// TurnIn is the NPC to report to; empty means the quest giver. For deliver it is the recipient.
 type Objective struct {
 	Kind   ObjectiveKind `json:"kind"`
 	Target string        `json:"target"`

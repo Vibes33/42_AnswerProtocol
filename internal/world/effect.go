@@ -21,9 +21,6 @@ const (
 	EffectCure        EffectKind = "cure"
 )
 
-// Effect is a side effect shared by moves and usable items.
-// Amount depends on Kind: flat HP (heal), percent of max HP (heal_percent),
-// flat mana (restore_mana), or a stat multiplier delta (stat_mod: 0.5 = +50%, -0.2 = -20%).
 type Effect struct {
 	Kind     EffectKind `json:"kind"`
 	Chance   float64    `json:"chance"`
@@ -34,8 +31,6 @@ type Effect struct {
 	Duration int        `json:"duration,omitempty"`
 }
 
-// StatusDef describes a lasting condition applied by an EffectStatus.
-// Percentages are of the afflicted entity's max HP, applied at the end of each turn.
 type StatusDef struct {
 	ID              string  `json:"id"`
 	Name            string  `json:"name"`
