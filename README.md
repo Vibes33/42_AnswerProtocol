@@ -36,6 +36,40 @@ _TODO: list every deviation from or extension to RFC 42TAP and justify it.
 Extensions never remove or rename RFC response fields, never require non-RFC commands to play,
 and can be disabled with the server's strict mode._
 
+- **Extra error codes.** RFC 42TAP defines no code for these situations, so the following were added,
+  keeping the RFC's numbering logic (2xx = connection, 4xx = request):
+
+  | Code | Message | When |
+  |---|---|---|
+  | 202 | `NOT_CONNECTED` | any command other than `CONNECT` sent before authenticating |
+  | 203 | `ALREADY_CONNECTED` | `CONNECT` sent twice on the same connection |
+  | 204 | `INVALID_NAME` | empty name, name over 32 characters, or containing spaces or control characters |
+  | 400 | `UNKNOWN_COMMAND` | unknown verb |
+  | 400 | `MISSING_ARGUMENT` | a command was sent without its required argument (`MOVE` with no direction) |
+  | 400 | `INVENTORY_FULL` | `TAKE` while carrying `inventory.bag_capacity` items |
+  | 404 | `ITEM_NOT_TAKEABLE` | `TAKE` on an item whose `obtainable` is false (scenery such as the notice board) |
+
+- **Two extra events.** `EVT ROOM ITEM TAKEN <player> <item-id>` and
+  `EVT ROOM ITEM DROPPED <player> <item-id>` are pushed to the other players in the room, so a GUI
+  can refresh its room view without polling `LOOK`. RFC 42TAP defines no item event; clients that
+  ignore unknown events are unaffected.
+
+- **Items are never lost.** When a player disconnects, everything they carried drops in the room
+  where they stood, so quest items cannot disappear from the world.
+
+- **`LOOK` reports definition ids.** Items and NPCs are listed by their definition id
+  (`item.healing_herb`), as in the RFC examples, not by the server's internal instance id. Two copies
+  of the same item in a room therefore appear twice in the list. Each copy is still a distinct
+  instance server-side, so taking one leaves the other.
+
+- **Monsters are listed as NPCs.** RFC 42TAP has a single `npcs` field, so `LOOK` lists peaceful NPCs
+  and hostile monsters together. They are separate files in the world data (`npcs.json`,
+  `monsters.json`), but the protocol does not distinguish them.
+
+- **Case-insensitive player names.** `alice` and `Alice` are the same name, so the second one gets
+  `ERR 201 NAME_IN_USE`. The RFC only requires uniqueness; this avoids two players being told apart
+  by capitalisation alone.
+
 - **Connection limit.** The server accepts at most `max_players` simultaneous clients
   (`data/game.json`, default 4; `0` means unlimited). A client connecting while the server is full
   receives `ERR 900 SERVER_FULL` instead of the `OK hello proto=1` greeting, and the connection is

@@ -1,14 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"os"
-	"strings"
 
+	"tap/internal/game"
 	"tap/internal/world"
 )
 
@@ -32,6 +31,9 @@ func main() {
 	}
 	defer ln.Close()
 
+	hub := game.NewHub(w)
+	go hub.Run()
+
 	var slots limiter
 	if w.Config.MaxPlayers > 0 {
 		slots = make(limiter, w.Config.MaxPlayers)
@@ -52,7 +54,7 @@ func main() {
 		}
 		go func() {
 			defer slots.release()
-			handleConn(conn)
+			hub.Serve(conn)
 		}()
 	}
 }
@@ -88,7 +90,9 @@ func (l limiter) String() string {
 
 func reject(conn net.Conn, msg string) {
 	defer conn.Close()
-	send(conn, msg)
+	if _, err := conn.Write([]byte(msg + "\n")); err != nil {
+		log.Printf("reject %s: %v", conn.RemoteAddr(), err)
+	}
 }
 
 func loadWorld(dir string) (*world.World, error) {
@@ -100,44 +104,4 @@ func loadWorld(dir string) (*world.World, error) {
 		return nil, err
 	}
 	return w, nil
-}
-
-func handleConn(conn net.Conn) {
-	defer conn.Close()
-
-	addr := conn.RemoteAddr().String()
-	log.Printf("connected: %s", addr)
-	defer log.Printf("disconnected: %s", addr)
-
-	send(conn, "OK hello proto=1")
-
-	scanner := bufio.NewScanner(conn)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" {
-			continue
-		}
-		log.Printf("recv %s: %s", addr, line)
-
-		verb, args, _ := strings.Cut(line, " ")
-		switch strings.ToUpper(verb) {
-		case "CONNECT":
-			if args == "" {
-				send(conn, "ERR 400 missing player name")
-				continue
-			}
-			send(conn, "OK connected")
-		case "QUIT":
-			send(conn, "OK bye")
-			return
-		default:
-			send(conn, "ERR 404 unknown command")
-		}
-	}
-}
-
-func send(conn net.Conn, msg string) {
-	if _, err := conn.Write([]byte(msg + "\n")); err != nil {
-		log.Printf("send: %v", err)
-	}
 }
