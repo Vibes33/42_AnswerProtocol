@@ -24,9 +24,6 @@ type Move struct {
 	Learn       *LearnRule   `json:"learn,omitempty"`
 }
 
-// LearnRule decides which characters may learn a move, and from which level.
-// If Characters is set, the move is a signature move restricted to them.
-// Otherwise an empty Archetypes or Types list means "any".
 type LearnRule struct {
 	Level      int       `json:"level"`
 	Archetypes []string  `json:"archetypes,omitempty"`

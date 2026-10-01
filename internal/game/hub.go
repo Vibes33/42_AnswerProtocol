@@ -4,18 +4,25 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"strings"
+	"time"
 	"unicode"
 	"unicode/utf8"
 
+	"tap/internal/logging"
 	"tap/internal/world"
 )
 
 const (
 	outBuffer  = 64
 	maxNameLen = 32
+
+	// Abuse detection thresholds (subject: monitor command flooding and rapid connections).
+	floodWindow = time.Second
+	floodLimit  = 20
+	connWindow  = 10 * time.Second
+	connLimit   = 5
 )
 
 // Error codes 201 and 900 come from RFC 42TAP. The others are extensions:
@@ -37,10 +44,27 @@ const (
 )
 
 type Client struct {
-	Name string
-	Room string
-	Addr string
-	out  chan string
+	Name  string
+	Room  string
+	Addr  string
+	Group *Group
+	out   chan string
+
+	Char     *world.Character
+	Level    int
+	XP       int
+	HP       int
+	Mana     int
+	Gold     int
+	Statuses map[string]int // status id -> remaining turns
+	Quests   map[string]*QuestProgress
+
+	talkIndex map[string]int // npc id -> next dialogue line
+
+	log         *logging.Logger
+	windowStart time.Time // start of the current flood-detection window
+	windowCount int
+	warned      bool
 }
 
 func (c *Client) authenticated() bool { return c.Name != "" }
@@ -48,9 +72,30 @@ func (c *Client) authenticated() bool { return c.Name != "" }
 func (c *Client) send(msg string) bool {
 	select {
 	case c.out <- msg:
+		c.logSent(msg)
 		return true
 	default:
 		return false
+	}
+}
+
+// logSent records everything leaving the server: replies, error codes and events.
+func (c *Client) logSent(msg string) {
+	f := logging.Fields{"player": c.Name, "addr": c.Addr}
+	switch {
+	case strings.HasPrefix(msg, "EVT "):
+		f["message"] = msg
+		c.log.Info("event", f)
+	case strings.HasPrefix(msg, "ERR "):
+		parts := strings.SplitN(msg, " ", 3)
+		f["code"] = parts[1]
+		if len(parts) > 2 {
+			f["message"] = parts[2]
+		}
+		c.log.Warn("error_reply", f)
+	default:
+		f["reply"] = msg
+		c.log.Info("response", f)
 	}
 }
 
@@ -74,20 +119,71 @@ type Hub struct {
 	byName   map[string]*Client
 	items    map[string]*ItemInstance
 	monsters map[string]*MonsterInstance
+	groups   map[string]*Group
+	groupSeq int
+	seq      int // instance id counter, shared by items and monsters
 	inbox    chan message
+	log      *logging.Logger
+	recent   map[string][]time.Time // client host -> recent connection times
 }
 
-func NewHub(w *world.World) *Hub {
+func NewHub(w *world.World, lg *logging.Logger) *Hub {
 	h := &Hub{
 		world:    w,
 		clients:  make(map[*Client]bool),
 		byName:   make(map[string]*Client),
 		items:    make(map[string]*ItemInstance),
 		monsters: make(map[string]*MonsterInstance),
+		groups:   make(map[string]*Group),
 		inbox:    make(chan message, 128),
+		log:      lg,
+		recent:   make(map[string][]time.Time),
 	}
 	h.spawn()
 	return h
+}
+
+// noteConnection flags hosts that reconnect abnormally often.
+func (h *Hub) noteConnection(c *Client) {
+	host, _, err := net.SplitHostPort(c.Addr)
+	if err != nil {
+		host = c.Addr
+	}
+	now := time.Now()
+	kept := h.recent[host][:0]
+	for _, t := range h.recent[host] {
+		if now.Sub(t) < connWindow {
+			kept = append(kept, t)
+		}
+	}
+	kept = append(kept, now)
+	h.recent[host] = kept
+
+	h.log.Info("connection", logging.Fields{"addr": c.Addr})
+	if len(kept) > connLimit {
+		h.log.Warn("rapid_connections", logging.Fields{
+			"host": host, "count": len(kept), "window_seconds": connWindow.Seconds(),
+		})
+	}
+}
+
+// noteCommand counts commands per second and warns once per window when a client floods.
+func (h *Hub) noteCommand(c *Client, verb, args string) {
+	now := time.Now()
+	if now.Sub(c.windowStart) > floodWindow {
+		c.windowStart, c.windowCount, c.warned = now, 0, false
+	}
+	c.windowCount++
+
+	h.log.Info("command", logging.Fields{
+		"addr": c.Addr, "player": c.Name, "verb": verb, "args": args,
+	})
+	if c.windowCount > floodLimit && !c.warned {
+		c.warned = true
+		h.log.Warn("command_flood", logging.Fields{
+			"addr": c.Addr, "player": c.Name, "commands": c.windowCount, "window_seconds": floodWindow.Seconds(),
+		})
+	}
 }
 
 // Run est la boucle de jeu : une seule goroutine, propriétaire de tout l'état mutable.
@@ -96,6 +192,7 @@ func (h *Hub) Run() {
 		switch m.kind {
 		case msgJoin:
 			h.clients[m.client] = true
+			h.noteConnection(m.client)
 			m.client.send("OK hello proto=1")
 		case msgCommand:
 			h.handle(m.client, m.line)
@@ -108,7 +205,7 @@ func (h *Hub) Run() {
 // Serve tourne dans la goroutine de la connexion : elle ne fait que lire des lignes
 // et les transmettre au hub. Elle ne touche jamais à l'état du jeu.
 func (h *Hub) Serve(conn net.Conn) {
-	c := &Client{Addr: conn.RemoteAddr().String(), out: make(chan string, outBuffer)}
+	c := &Client{Addr: conn.RemoteAddr().String(), out: make(chan string, outBuffer), log: h.log}
 
 	writerDone := make(chan struct{})
 	go writeLoop(conn, c.out, writerDone)
@@ -142,7 +239,8 @@ func (h *Hub) handle(c *Client, line string) {
 	}
 	verb, args, _ := strings.Cut(line, " ")
 	verb = strings.ToUpper(verb)
-	log.Printf("recv %s (%s): %s", c.Addr, c.Name, line)
+	h.noteCommand(c, verb, args)
+	h.reviveMonsters()
 
 	if !c.authenticated() && verb != "CONNECT" {
 		c.send(errNotConnected)
@@ -162,6 +260,20 @@ func (h *Hub) handle(c *Client, line string) {
 		h.drop(c, args)
 	case "INVENTORY":
 		h.inventory(c)
+	case "CHAT":
+		h.chat(c, args)
+	case "GROUP":
+		h.group(c, args)
+	case "TALK":
+		h.talk(c, args)
+	case "ATTACK":
+		h.attack(c, args)
+	case "STATUS":
+		h.status(c)
+	case "QUEST":
+		h.quest(c, args)
+	case "QUESTS":
+		h.quests(c)
 	case "WHO":
 		c.send(fmt.Sprintf("OK players=%d", len(h.byName)))
 	case "QUIT":
@@ -192,7 +304,8 @@ func (h *Hub) connect(c *Client, name string) {
 	c.Name = name
 	c.Room = h.world.Config.StartRoom
 	h.byName[key] = c
-	log.Printf("connected: %s as %s in %s", c.Addr, c.Name, c.Room)
+	h.initPlayer(c)
+	h.log.Info("player_connected", logging.Fields{"addr": c.Addr, "player": c.Name, "room": c.Room})
 
 	c.send("OK connected")
 	h.broadcastRoom(c.Room, "EVT ROOM PRESENCE ENTER "+c.Name, c)
@@ -225,7 +338,7 @@ func (h *Hub) look(c *Client) {
 
 	payload, err := json.Marshal(reply)
 	if err != nil {
-		log.Printf("look %s: %v", c.Room, err)
+		h.log.Error("encode_failed", logging.Fields{"command": "LOOK", "room": c.Room, "error": err.Error()})
 		c.send(errInternal)
 		return
 	}
@@ -272,7 +385,7 @@ func (h *Hub) take(c *Client, query string) {
 
 	inst.Room = ""
 	inst.Holder = c
-	log.Printf("%s took %s in %s", c.Name, inst.ID, c.Room)
+	h.log.Info("item_taken", logging.Fields{"player": c.Name, "item": inst.ID, "room": c.Room})
 
 	c.send("OK taken=" + inst.Def.ID)
 	h.broadcastRoom(c.Room, fmt.Sprintf("EVT ROOM ITEM TAKEN %s %s", c.Name, inst.Def.ID), c)
@@ -291,7 +404,7 @@ func (h *Hub) drop(c *Client, query string) {
 
 	inst.Holder = nil
 	inst.Room = c.Room
-	log.Printf("%s dropped %s in %s", c.Name, inst.ID, c.Room)
+	h.log.Info("item_dropped", logging.Fields{"player": c.Name, "item": inst.ID, "room": c.Room})
 
 	c.send("OK dropped=" + inst.Def.ID)
 	h.broadcastRoom(c.Room, fmt.Sprintf("EVT ROOM ITEM DROPPED %s %s", c.Name, inst.Def.ID), c)
@@ -304,7 +417,7 @@ func (h *Hub) inventory(c *Client) {
 	}
 	payload, err := json.Marshal(ids)
 	if err != nil {
-		log.Printf("inventory %s: %v", c.Name, err)
+		h.log.Error("encode_failed", logging.Fields{"command": "INVENTORY", "player": c.Name, "error": err.Error()})
 		c.send(errInternal)
 		return
 	}
@@ -334,14 +447,15 @@ func (h *Hub) remove(c *Client) {
 	if name != "" {
 		delete(h.byName, strings.ToLower(name))
 		h.dropAll(c, room)
+		h.leaveGroup(c, false)
 	}
 	close(c.out) // ends writeLoop, which unblocks Serve, which closes the socket
 
 	if name == "" {
-		log.Printf("disconnected: %s", c.Addr)
+		h.log.Info("disconnected", logging.Fields{"addr": c.Addr})
 		return
 	}
-	log.Printf("disconnected: %s (%s)", c.Addr, name)
+	h.log.Info("player_disconnected", logging.Fields{"addr": c.Addr, "player": name, "room": room})
 	h.broadcastRoom(room, "EVT ROOM PRESENCE LEAVE "+name, nil)
 	h.broadcastAll(fmt.Sprintf("EVT STATS players=%d", len(h.byName)))
 }
@@ -367,7 +481,9 @@ func (h *Hub) broadcast(msg string, want func(*Client) bool) {
 		}
 	}
 	for _, c := range stuck {
-		log.Printf("dropping %s (%s): output buffer full", c.Addr, c.Name)
+		h.log.Warn("client_dropped", logging.Fields{
+			"addr": c.Addr, "player": c.Name, "reason": "output buffer full",
+		})
 		h.remove(c)
 	}
 }

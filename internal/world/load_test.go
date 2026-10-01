@@ -9,8 +9,6 @@ import (
 
 const dataDir = "../../data"
 
-// copyData duplicates the real world into a temporary directory, so a test can break
-// a file without ever touching data/.
 func copyData(t *testing.T) string {
 	t.Helper()
 	dst := t.TempDir()

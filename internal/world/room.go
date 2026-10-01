@@ -1,6 +1,5 @@
 package world
 
-// Zone groups rooms. RecommendedLevel is informational only: it never blocks entry.
 type Zone struct {
 	ID               string `json:"id"`
 	Name             string `json:"name"`
