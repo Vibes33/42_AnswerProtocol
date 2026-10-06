@@ -20,7 +20,8 @@ Requirements: Go 1.27+ and `make`. The GUI client additionally needs a C compile
 make deps
 make build
 make run-server
-make run-client
+make run-client       # in another terminal
+make run-client-gui   # in another terminal (Fyne; first build takes a few minutes)
 ```
 
 See [Building and Running](#building-and-running) for details.
