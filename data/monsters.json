@@ -74,5 +74,186 @@
       { "item": "item.potion", "chance": 1.0, "min": 2, "max": 2 }
     ],
     "dialogue": ["WHO DARES ENTER MY HOLLOW?"]
+  },
+  {
+    "id": "mob.dire_wolf",
+    "name": "Dire Wolf",
+    "description": "A wolf the size of a pony, with eyes like embers.",
+    "type": "normal",
+    "level": 5,
+    "stats": { "hp": 75, "mana": 10, "attack": 16, "defense": 12, "magic_attack": 6, "magic_defense": 9, "speed": 14 },
+    "moves": ["move.savage_bite", "move.pounce"],
+    "xp": 30,
+    "gold": 6,
+    "drops": [
+      { "item": "item.wolf_pelt", "chance": 0.6, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.twig_blight",
+    "name": "Twig Blight",
+    "description": "A walking bundle of dead branches, born from a cursed tree.",
+    "type": "plant",
+    "level": 4,
+    "stats": { "hp": 50, "mana": 10, "attack": 13, "defense": 10, "magic_attack": 6, "magic_defense": 8, "speed": 8 },
+    "moves": ["move.splinter_volley", "move.tackle"],
+    "xp": 22,
+    "gold": 4,
+    "drops": [
+      { "item": "item.healing_herb", "chance": 0.3, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.giant_spider",
+    "name": "Giant Spider",
+    "description": "A hairy spider as big as a cart, dripping venom.",
+    "type": "plant",
+    "level": 6,
+    "stats": { "hp": 80, "mana": 10, "attack": 17, "defense": 13, "magic_attack": 8, "magic_defense": 10, "speed": 13 },
+    "moves": ["move.venom_bite", "move.pounce"],
+    "xp": 35,
+    "gold": 7,
+    "drops": [
+      { "item": "item.spider_silk", "chance": 0.7, "min": 1, "max": 2 },
+      { "item": "item.antidote", "chance": 0.2, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.owlbear",
+    "name": "Owlbear",
+    "description": "Half owl, half bear, all fury. The terror of the Whisperwood.",
+    "boss": true,
+    "type": "normal",
+    "level": 8,
+    "stats": { "hp": 320, "mana": 20, "attack": 26, "defense": 18, "magic_attack": 8, "magic_defense": 14, "speed": 10 },
+    "moves": ["move.maul", "move.savage_bite", "move.body_slam"],
+    "xp": 300,
+    "gold": 90,
+    "drops": [
+      { "item": "item.owlbear_feather", "chance": 1.0, "min": 1, "max": 1 },
+      { "item": "item.greater_potion", "chance": 1.0, "min": 1, "max": 1 }
+    ],
+    "dialogue": ["HOO-RRAAAH!"]
+  },
+  {
+    "id": "mob.gnoll_raider",
+    "name": "Gnoll Raider",
+    "description": "A hyena-headed raider with a crude spear and a cruel laugh.",
+    "type": "normal",
+    "level": 7,
+    "stats": { "hp": 95, "mana": 10, "attack": 22, "defense": 15, "magic_attack": 6, "magic_defense": 10, "speed": 12 },
+    "moves": ["move.spear_thrust", "move.savage_bite"],
+    "xp": 45,
+    "gold": 12,
+    "drops": [
+      { "item": "item.cactus_fruit", "chance": 0.3, "min": 1, "max": 1 },
+      { "item": "item.potion", "chance": 0.15, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.dust_mephit",
+    "name": "Dust Mephit",
+    "description": "A tiny, spiteful spirit of whirling sand.",
+    "type": "rock",
+    "level": 7,
+    "stats": { "hp": 70, "mana": 20, "attack": 10, "defense": 14, "magic_attack": 22, "magic_defense": 14, "speed": 16 },
+    "moves": ["move.sand_blast", "move.tackle"],
+    "xp": 40,
+    "gold": 10,
+    "drops": [
+      { "item": "item.ether", "chance": 0.25, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.giant_scorpion",
+    "name": "Giant Scorpion",
+    "description": "A scorpion armoured like a knight, with a tail as thick as an arm.",
+    "type": "rock",
+    "level": 8,
+    "stats": { "hp": 110, "mana": 10, "attack": 24, "defense": 22, "magic_attack": 6, "magic_defense": 10, "speed": 9 },
+    "moves": ["move.venom_sting", "move.pinch"],
+    "xp": 55,
+    "gold": 14,
+    "drops": [
+      { "item": "item.scorpion_stinger", "chance": 0.6, "min": 1, "max": 1 },
+      { "item": "item.antidote", "chance": 0.3, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.mummy_lord",
+    "name": "Mummy Lord Ankh-Ra",
+    "description": "A pharaoh cursed to guard his tomb forever. His dry linen wrappings burn like kindling.",
+    "boss": true,
+    "type": "plant",
+    "level": 11,
+    "stats": { "hp": 420, "mana": 40, "attack": 24, "defense": 22, "magic_attack": 30, "magic_defense": 22, "speed": 8 },
+    "moves": ["move.mummy_rot", "move.sand_blast", "move.body_slam"],
+    "xp": 500,
+    "gold": 180,
+    "drops": [
+      { "item": "item.ancient_scarab", "chance": 1.0, "min": 1, "max": 1 },
+      { "item": "item.greater_potion", "chance": 1.0, "min": 2, "max": 2 }
+    ],
+    "dialogue": ["WHO DISTURBS THE SLUMBER OF ANKH-RA?"]
+  },
+  {
+    "id": "mob.kobold_skirmisher",
+    "name": "Kobold Skirmisher",
+    "description": "A small scaly kobold who worships the dragon and fights dirty.",
+    "type": "normal",
+    "level": 9,
+    "stats": { "hp": 100, "mana": 10, "attack": 26, "defense": 18, "magic_attack": 8, "magic_defense": 12, "speed": 18 },
+    "moves": ["move.spear_thrust", "move.sling_stone"],
+    "xp": 60,
+    "gold": 15,
+    "drops": [
+      { "item": "item.mithril_ore", "chance": 0.25, "min": 1, "max": 1 },
+      { "item": "item.potion", "chance": 0.2, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.hill_troll",
+    "name": "Hill Troll",
+    "description": "A hulking troll with stony skin. Its wounds close as you watch.",
+    "type": "rock",
+    "level": 11,
+    "stats": { "hp": 170, "mana": 10, "attack": 32, "defense": 24, "magic_attack": 6, "magic_defense": 12, "speed": 7 },
+    "moves": ["move.boulder_toss", "move.body_slam", "move.troll_regeneration"],
+    "xp": 85,
+    "gold": 20,
+    "drops": [
+      { "item": "item.greater_potion", "chance": 0.2, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.magma_mephit",
+    "name": "Magma Mephit",
+    "description": "A cackling imp of living lava.",
+    "type": "fire",
+    "level": 10,
+    "stats": { "hp": 90, "mana": 30, "attack": 12, "defense": 16, "magic_attack": 30, "magic_defense": 18, "speed": 17 },
+    "moves": ["move.lava_spit", "move.ember"],
+    "xp": 70,
+    "gold": 16,
+    "drops": [
+      { "item": "item.ether", "chance": 0.3, "min": 1, "max": 1 }
+    ]
+  },
+  {
+    "id": "mob.ashfang",
+    "name": "Ashfang the Red",
+    "description": "An ancient red dragon, greedy and proud, asleep on a mountain of gold.",
+    "boss": true,
+    "type": "fire",
+    "level": 15,
+    "stats": { "hp": 700, "mana": 80, "attack": 34, "defense": 30, "magic_attack": 38, "magic_defense": 28, "speed": 12 },
+    "moves": ["move.fire_breath", "move.claw_rend", "move.tail_sweep", "move.wing_buffet"],
+    "xp": 1200,
+    "gold": 500,
+    "drops": [
+      { "item": "item.dragon_scale", "chance": 1.0, "min": 2, "max": 3 },
+      { "item": "item.greater_potion", "chance": 1.0, "min": 2, "max": 2 }
+    ],
+    "dialogue": ["Little thief... you smell of copper and fear. My hoard is not for you."]
   }
 ]

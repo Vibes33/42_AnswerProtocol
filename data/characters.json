@@ -42,5 +42,72 @@
       { "item": "item.oak_staff", "count": 1 },
       { "item": "item.minor_potion", "count": 2 }
     ]
+  },
+  {
+    "id": "char.maren",
+    "name": "Maren",
+    "description": "A coast-born archer whose arrows ride a jet of seawater.",
+    "archetype": "arch.archer",
+    "type": "water",
+    "starting_items": [
+      { "item": "item.short_bow", "count": 1 },
+      { "item": "item.minor_potion", "count": 2 }
+    ]
+  },
+  {
+    "id": "char.fenwick",
+    "name": "Fenwick",
+    "description": "A ranger of the Whisperwood who tips his arrows with thorn sap.",
+    "archetype": "arch.archer",
+    "type": "plant",
+    "starting_items": [
+      { "item": "item.short_bow", "count": 1 },
+      { "item": "item.antidote", "count": 1 },
+      { "item": "item.minor_potion", "count": 1 }
+    ]
+  },
+  {
+    "id": "char.ignar",
+    "name": "Ignar",
+    "description": "A blacksmith's son who fights with fists hot from the forge.",
+    "archetype": "arch.fighter",
+    "type": "fire",
+    "starting_items": [
+      { "item": "item.wooden_sword", "count": 1 },
+      { "item": "item.minor_potion", "count": 2 }
+    ]
+  },
+  {
+    "id": "char.tessa",
+    "name": "Tessa",
+    "description": "A former city guard with no magic and no fear, only a strong arm.",
+    "archetype": "arch.fighter",
+    "type": "normal",
+    "starting_items": [
+      { "item": "item.wooden_sword", "count": 1 },
+      { "item": "item.minor_potion", "count": 3 }
+    ]
+  },
+  {
+    "id": "char.solenne",
+    "name": "Solenne",
+    "description": "A hot-tempered sorceress who learned fire before she learned to read.",
+    "archetype": "arch.mage",
+    "type": "fire",
+    "starting_items": [
+      { "item": "item.oak_staff", "count": 1 },
+      { "item": "item.ether", "count": 1 }
+    ]
+  },
+  {
+    "id": "char.thalassa",
+    "name": "Thalassa",
+    "description": "A sea witch who calls the tide to crush her enemies.",
+    "archetype": "arch.mage",
+    "type": "water",
+    "starting_items": [
+      { "item": "item.oak_staff", "count": 1 },
+      { "item": "item.ether", "count": 1 }
+    ]
   }
 ]

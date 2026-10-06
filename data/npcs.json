@@ -28,7 +28,7 @@
     "name": "Tomlin the Bard",
     "description": "A lute player who knows every rumour in town.",
     "roles": ["dialogue"],
-    "dialogue": ["They say a king of slime rules the hollow west of the forest edge.", "Fire melts ice, water drowns fire... every child knows the song."]
+    "dialogue": ["They say a king of slime rules the hollow south of the forest edge.", "Fire melts ice, water drowns fire... every child knows the song.", "A haunted wood west of the chapel, a desert east of the market, a dragon north of the tavern. Pick your doom."]
   },
   {
     "id": "npc.merchant",
@@ -70,5 +70,44 @@
     "description": "A tired warden guarding the southern gate.",
     "roles": ["dialogue"],
     "dialogue": ["Beyond this gate lie the Verdant Plains. Mind the blobs.", "I'd kill for a cold ale."]
+  },
+  {
+    "id": "npc.sentry",
+    "name": "Captain Hilde",
+    "description": "A scarred veteran in a dented helmet, watching the northern trail.",
+    "roles": ["dialogue"],
+    "dialogue": ["The peaks belong to the dragon. Kobolds, trolls, worse.", "Old Thrain still camps on the Windy Ledge. Mad, or brave."]
+  },
+  {
+    "id": "npc.druid",
+    "name": "Elowen the Druid",
+    "description": "A druid with leaves in her hair and an owl on her shoulder.",
+    "roles": ["dialogue", "quest_giver"],
+    "dialogue": ["The Whisperwood is sick. Blights walk where trees once stood.", "An owlbear has claimed the cave south of the glowing glade. Even the wolves avoid it."],
+    "quests": ["quest.silk_for_druid", "quest.owlbear_terror"]
+  },
+  {
+    "id": "npc.nomad",
+    "name": "Zahra the Nomad",
+    "description": "A desert trader wrapped in indigo cloth, a scimitar at her hip.",
+    "roles": ["dialogue", "merchant", "quest_giver"],
+    "dialogue": ["Water is worth more than gold out here, friend.", "The gnolls came from the ruins. The ruins came from the tomb. Nobody comes back from the tomb."],
+    "shop": [
+      { "item": "item.waterskin" },
+      { "item": "item.potion" },
+      { "item": "item.greater_potion" },
+      { "item": "item.antidote" },
+      { "item": "item.scimitar" },
+      { "item": "item.chain_mail" }
+    ],
+    "quests": ["quest.scorpion_plague", "quest.water_for_thrain", "quest.tomb_of_ankhra"]
+  },
+  {
+    "id": "npc.dwarf",
+    "name": "Thrain Stonebeard",
+    "description": "An old dwarf smith who swore to forge the blade that slays Ashfang.",
+    "roles": ["dialogue", "quest_giver"],
+    "dialogue": ["Ashfang burned my forge and my clan. I have waited sixty years.", "Mithril, lad. Bring me mithril and I'll forge a sword worthy of a dragon."],
+    "quests": ["quest.mithril_vein", "quest.slay_ashfang"]
   }
 ]

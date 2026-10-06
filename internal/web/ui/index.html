@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- The page is already dark: stop Dark Reader and Chrome's forced dark mode from darkening
+     the white elements (current room, compass, tabs, HP bars). -->
+<meta name="color-scheme" content="dark">
+<meta name="darkreader-lock">
+<title>TAP — The Answer Protocol</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <div id="map">
+    <div id="plane">
+      <div id="board">
+        <div class="slab"></div>
+        <div id="labels"></div>
+        <div id="cells"></div>
+        <div id="links"></div>
+        <div id="tiles"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vignette"></div>
+  <div class="edge edge-top"></div>
+  <div class="edge edge-bottom"></div>
+  <div class="edge edge-left"></div>
+  <div class="edge edge-right"></div>
+
+  <div id="toastWrap" hidden><div class="toast"><small id="toastTag" class="mono"></small><span id="toastText"></span></div></div>
+
+  <aside id="rail" class="glass">
+    <div class="hud">
+      <div class="who">
+        <div class="avatar" id="avatar">?</div>
+        <div class="who-txt"><span class="who-name" id="hudName">—</span><span class="who-sub" id="hudSub"></span></div>
+      </div>
+      <div class="meter">
+        <div class="meter-head"><span>PV</span><span class="mono" id="hpLabel">— / —</span></div>
+        <div class="track"><div class="fill" id="hpFill" style="width:0%"></div></div>
+      </div>
+      <div class="meter" id="manaMeter" hidden>
+        <div class="meter-head"><span>Mana</span><span class="mono" id="manaLabel"></span></div>
+        <div class="track"><div class="fill dim" id="manaFill" style="width:0%"></div></div>
+      </div>
+      <div class="hud-foot"><span id="xpLabel"></span><span id="goldLabel"></span></div>
+    </div>
+    <div class="sep"></div>
+    <div class="nav" id="nav"></div>
+    <div class="spacer"></div>
+    <div class="server-line mono" id="serverLine"></div>
+    <button class="btn-soft" data-act="tilt" id="tiltBtn">Flat view</button>
+    <button class="btn-ghost" data-act="quit">Quit</button>
+  </aside>
+
+  <section id="sheet" class="glass" hidden>
+    <div class="sheet-h">
+      <div class="sheet-ht"><span class="sheet-t" id="sheetTitle"></span><span class="sheet-s" id="sheetSub"></span></div>
+      <button class="close" data-act="close">Close</button>
+    </div>
+    <div class="sheet-b" id="sheetBody"></div>
+  </section>
+
+  <nav id="bar" class="glass">
+    <div id="compass"></div>
+    <div class="vdiv"></div>
+    <div class="act-wrap">
+      <div class="target-row">
+        <div class="target" id="target"></div>
+        <span class="room-id mono" id="roomId"></span>
+      </div>
+      <div id="actions"></div>
+    </div>
+  </nav>
+
+  <aside id="panel" class="glass">
+    <div class="tabs-wrap">
+      <div class="seg" id="tabs">
+        <button data-act="tab" data-id="room" class="on">Room</button>
+        <button data-act="tab" data-id="log" id="logTab">Log</button>
+      </div>
+    </div>
+    <div id="roomView"></div>
+    <div id="logView" hidden>
+      <div id="logList"></div>
+      <div class="chat">
+        <div class="seg three" id="scopes"></div>
+        <form id="chatForm" autocomplete="off">
+          <input class="field" id="chatInput" placeholder="Message…" maxlength="900">
+          <button class="send" type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+  </aside>
+
+  <div id="login" class="overlay">
+    <form class="login glass" id="loginForm" autocomplete="off">
+      <span class="kicker mono">TAP · RFC 42TAP</span>
+      <h1>The Answer Protocol</h1>
+      <span class="login-sub" id="loginAddr">Looking for the relay…</span>
+      <input class="field big" id="loginName" placeholder="Your name" maxlength="32">
+      <div id="picker" class="picker" hidden></div>
+      <button class="btn-primary big" type="submit">Connect</button>
+      <span class="login-msg" id="loginMsg"></span>
+    </form>
+  </div>
+
+  <div id="closed" class="overlay" hidden>
+    <div class="closed">
+      <span class="kicker mono" id="closedKicker">OK bye</span>
+      <span class="closed-t" id="closedTitle">Disconnected from the server</span>
+      <span class="closed-s" id="closedAddr"></span>
+      <button class="btn-primary big" data-act="reload">Reconnect</button>
+    </div>
+  </div>
+</div>
+<script src="demo.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -352,5 +352,130 @@
     "type": "plant", "category": "status", "target": "self",
     "power": 0, "mana_cost": 0, "accuracy": 1.0,
     "effects": [ { "kind": "heal_percent", "chance": 1.0, "amount": 15 } ]
+  },
+  {
+    "id": "move.savage_bite",
+    "name": "Savage Bite",
+    "description": "Sinks its fangs deep into the target.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 30, "mana_cost": 0, "accuracy": 0.9
+  },
+  {
+    "id": "move.pounce",
+    "name": "Pounce",
+    "description": "Leaps on the target from the shadows.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 24, "mana_cost": 0, "accuracy": 0.95
+  },
+  {
+    "id": "move.splinter_volley",
+    "name": "Splinter Volley",
+    "description": "Shoots a spray of needle-sharp splinters.",
+    "type": "plant", "category": "physical", "target": "enemy",
+    "power": 22, "mana_cost": 0, "accuracy": 0.95
+  },
+  {
+    "id": "move.venom_bite",
+    "name": "Venom Bite",
+    "description": "A bite dripping with paralysing venom. May poison.",
+    "type": "plant", "category": "physical", "target": "enemy",
+    "power": 26, "mana_cost": 0, "accuracy": 0.9,
+    "effects": [ { "kind": "status", "chance": 0.35, "status": "status.poison" } ]
+  },
+  {
+    "id": "move.maul",
+    "name": "Maul",
+    "description": "The owlbear's crushing hug: claws and beak at once.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 50, "mana_cost": 0, "accuracy": 0.85
+  },
+  {
+    "id": "move.spear_thrust",
+    "name": "Spear Thrust",
+    "description": "A quick jab with a crude spear.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 28, "mana_cost": 0, "accuracy": 0.95
+  },
+  {
+    "id": "move.sling_stone",
+    "name": "Sling Stone",
+    "description": "A stone hurled from a leather sling.",
+    "type": "rock", "category": "physical", "target": "enemy",
+    "power": 20, "mana_cost": 0, "accuracy": 0.9
+  },
+  {
+    "id": "move.venom_sting",
+    "name": "Venom Sting",
+    "description": "A stab from a barbed tail. May poison.",
+    "type": "rock", "category": "physical", "target": "enemy",
+    "power": 30, "mana_cost": 0, "accuracy": 0.9,
+    "effects": [ { "kind": "status", "chance": 0.3, "status": "status.poison" } ]
+  },
+  {
+    "id": "move.sand_blast",
+    "name": "Sand Blast",
+    "description": "A scouring cloud of hot sand.",
+    "type": "rock", "category": "magical", "target": "enemy",
+    "power": 26, "mana_cost": 0, "accuracy": 0.95
+  },
+  {
+    "id": "move.mummy_rot",
+    "name": "Mummy Rot",
+    "description": "A cursed touch that withers flesh. Often poisons.",
+    "type": "plant", "category": "magical", "target": "enemy",
+    "power": 30, "mana_cost": 0, "accuracy": 0.9,
+    "effects": [ { "kind": "status", "chance": 0.5, "status": "status.poison" } ]
+  },
+  {
+    "id": "move.boulder_toss",
+    "name": "Boulder Toss",
+    "description": "Rips a rock from the ground and hurls it.",
+    "type": "rock", "category": "physical", "target": "enemy",
+    "power": 34, "mana_cost": 0, "accuracy": 0.85
+  },
+  {
+    "id": "move.troll_regeneration",
+    "name": "Troll Regeneration",
+    "description": "Wounds close before your eyes.",
+    "type": "normal", "category": "status", "target": "self",
+    "power": 0, "mana_cost": 0, "accuracy": 1.0,
+    "effects": [ { "kind": "heal_percent", "chance": 1.0, "target": "self", "amount": 12 } ]
+  },
+  {
+    "id": "move.lava_spit",
+    "name": "Lava Spit",
+    "description": "Spits a glob of molten rock. May burn.",
+    "type": "fire", "category": "magical", "target": "enemy",
+    "power": 28, "mana_cost": 0, "accuracy": 0.9,
+    "effects": [ { "kind": "status", "chance": 0.3, "status": "status.burn" } ]
+  },
+  {
+    "id": "move.fire_breath",
+    "name": "Fire Breath",
+    "description": "Ashfang's signature: a cone of roaring dragonfire. Often burns.",
+    "type": "fire", "category": "magical", "target": "all_enemies",
+    "power": 40, "mana_cost": 0, "accuracy": 0.9,
+    "effects": [ { "kind": "status", "chance": 0.4, "status": "status.burn" } ]
+  },
+  {
+    "id": "move.claw_rend",
+    "name": "Claw Rend",
+    "description": "Rakes the target with claws as long as swords.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 45, "mana_cost": 0, "accuracy": 0.9
+  },
+  {
+    "id": "move.tail_sweep",
+    "name": "Tail Sweep",
+    "description": "A massive tail sweeps everything aside.",
+    "type": "normal", "category": "physical", "target": "all_enemies",
+    "power": 35, "mana_cost": 0, "accuracy": 0.9
+  },
+  {
+    "id": "move.wing_buffet",
+    "name": "Wing Buffet",
+    "description": "Beats its wings, hurling the target against the rocks.",
+    "type": "normal", "category": "physical", "target": "enemy",
+    "power": 30, "mana_cost": 0, "accuracy": 0.95
   }
 ]

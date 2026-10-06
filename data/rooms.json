@@ -15,7 +15,7 @@
     "description": "A cozy tavern filled with warmth and laughter.",
     "zone": "zone.village",
     "safe": true,
-    "exits": { "south": "loc.village_square", "west": "loc.elder_house", "southeast": "loc.market" },
+    "exits": { "south": "loc.village_square", "west": "loc.elder_house", "southeast": "loc.market", "north": "loc.north_gate" },
     "items": [ { "item": "item.frothy_ale", "count": 2 } ],
     "npcs": ["npc.innkeeper", "npc.bard"]
   },
@@ -25,7 +25,7 @@
     "description": "Stalls lined with goods and supplies.",
     "zone": "zone.village",
     "safe": true,
-    "exits": { "west": "loc.village_square", "northwest": "loc.tavern" },
+    "exits": { "west": "loc.village_square", "northwest": "loc.tavern", "east": "loc.caravan_road" },
     "npcs": ["npc.merchant"]
   },
   {
@@ -34,7 +34,7 @@
     "description": "A quiet stone chapel smelling of incense.",
     "zone": "zone.village",
     "safe": true,
-    "exits": { "east": "loc.village_square", "north": "loc.elder_house" },
+    "exits": { "east": "loc.village_square", "north": "loc.elder_house", "west": "loc.west_gate" },
     "npcs": ["npc.priestess"]
   },
   {
@@ -43,7 +43,7 @@
     "description": "A cluttered home full of maps and old books.",
     "zone": "zone.village",
     "safe": true,
-    "exits": { "south": "loc.chapel", "east": "loc.tavern" },
+    "exits": { "south": "loc.chapel", "east": "loc.tavern", "north": "loc.goat_path" },
     "npcs": ["npc.elder"]
   },
   {
@@ -69,16 +69,16 @@
     "name": "Misty Pond",
     "description": "A still pond wrapped in fog.",
     "zone": "zone.verdant_plains",
-    "exits": { "west": "loc.green_plains", "southwest": "loc.forest_edge" },
+    "exits": { "west": "loc.green_plains", "southwest": "loc.forest_edge", "east": "loc.bleached_bones" },
     "items": [ { "item": "item.healing_herb", "count": 1 } ],
     "monsters": [ { "monster": "mob.blue_blob", "count": 1, "respawn_seconds": 60 } ]
   },
   {
     "id": "loc.forest_edge",
     "name": "Forest Edge",
-    "description": "The plains end at a dark line of trees. A slimy trail leads west.",
+    "description": "The plains end at a dark line of trees. A slimy trail leads south.",
     "zone": "zone.verdant_plains",
-    "exits": { "north": "loc.green_plains", "northeast": "loc.misty_pond", "west": "loc.blob_hollow" },
+    "exits": { "north": "loc.green_plains", "northeast": "loc.misty_pond", "south": "loc.blob_hollow", "west": "loc.whisperwood_trail" },
     "monsters": [
       { "monster": "mob.pebble_crab", "count": 1, "respawn_seconds": 90 },
       { "monster": "mob.ember_wisp", "count": 1, "respawn_seconds": 90 },
@@ -90,7 +90,239 @@
     "name": "Blob Hollow",
     "description": "A damp hollow coated in slime. Something enormous breathes in the dark.",
     "zone": "zone.verdant_plains",
-    "exits": { "east": "loc.forest_edge" },
+    "exits": { "north": "loc.forest_edge" },
     "monsters": [ { "monster": "mob.blob_king", "count": 1, "respawn_seconds": 300 } ]
+  },
+  {
+    "id": "loc.north_gate",
+    "name": "North Gate",
+    "description": "A stone gate behind the tavern. A trail climbs toward smoking peaks.",
+    "zone": "zone.village",
+    "safe": true,
+    "exits": { "south": "loc.tavern", "north": "loc.stony_foothills" },
+    "npcs": ["npc.sentry"]
+  },
+  {
+    "id": "loc.west_gate",
+    "name": "West Gate",
+    "description": "A mossy archway beside the chapel. Beyond it, the trees of the Whisperwood.",
+    "zone": "zone.village",
+    "safe": true,
+    "exits": { "east": "loc.chapel", "south": "loc.woodcutters_camp" }
+  },
+
+  {
+    "id": "loc.goat_path",
+    "name": "Goat Path",
+    "description": "A steep path behind the Elder's House, worn by goats and kobold raiders.",
+    "zone": "zone.ashfang_peaks",
+    "exits": { "south": "loc.elder_house", "north": "loc.kobold_warren" },
+    "monsters": [ { "monster": "mob.kobold_skirmisher", "count": 1, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.stony_foothills",
+    "name": "Stony Foothills",
+    "description": "Loose scree and scorched shrubs. Small clawed footprints are everywhere.",
+    "zone": "zone.ashfang_peaks",
+    "exits": { "south": "loc.north_gate", "west": "loc.kobold_warren", "east": "loc.troll_bridge" },
+    "monsters": [ { "monster": "mob.kobold_skirmisher", "count": 2, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.kobold_warren",
+    "name": "Kobold Warren",
+    "description": "Cramped tunnels full of traps and crude dragon idols. Silver veins glint in the walls.",
+    "zone": "zone.ashfang_peaks",
+    "exits": { "east": "loc.stony_foothills", "north": "loc.cinder_ridge", "south": "loc.goat_path" },
+    "items": [ { "item": "item.mithril_ore", "count": 2 } ],
+    "monsters": [ { "monster": "mob.kobold_skirmisher", "count": 2, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.troll_bridge",
+    "name": "Troll Bridge",
+    "description": "A rope bridge over a chasm. Something huge lives underneath and demands a toll.",
+    "zone": "zone.ashfang_peaks",
+    "exits": { "west": "loc.stony_foothills", "north": "loc.windy_ledge" },
+    "monsters": [ { "monster": "mob.hill_troll", "count": 1, "respawn_seconds": 180 } ]
+  },
+  {
+    "id": "loc.windy_ledge",
+    "name": "Windy Ledge",
+    "description": "A sheltered ledge where an old dwarf keeps a fire. The summit looms to the west.",
+    "zone": "zone.ashfang_peaks",
+    "safe": true,
+    "exits": { "south": "loc.troll_bridge", "west": "loc.scorched_pass" },
+    "npcs": ["npc.dwarf"]
+  },
+  {
+    "id": "loc.scorched_pass",
+    "name": "Scorched Pass",
+    "description": "Rock melted into glass by dragonfire. A cave mouth gapes to the north.",
+    "zone": "zone.ashfang_peaks",
+    "exits": { "east": "loc.windy_ledge", "west": "loc.cinder_ridge", "north": "loc.ashfang_lair" },
+    "monsters": [
+      { "monster": "mob.magma_mephit", "count": 1, "respawn_seconds": 90 },
+      { "monster": "mob.hill_troll", "count": 1, "respawn_seconds": 180 }
+    ]
+  },
+  {
+    "id": "loc.cinder_ridge",
+    "name": "Cinder Ridge",
+    "description": "A ridge of black glass and bubbling vents. The air shimmers with heat.",
+    "zone": "zone.ashfang_peaks",
+    "exits": { "east": "loc.scorched_pass", "south": "loc.kobold_warren" },
+    "items": [ { "item": "item.mithril_ore", "count": 1 } ],
+    "monsters": [ { "monster": "mob.magma_mephit", "count": 2, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.ashfang_lair",
+    "name": "Ashfang's Lair",
+    "description": "A vast caldera heaped with gold. A red dragon sleeps on the hoard, smoke curling from its nostrils.",
+    "zone": "zone.ashfang_peaks",
+    "exits": { "south": "loc.scorched_pass" },
+    "items": [ { "item": "item.dragon_hoard", "count": 1 } ],
+    "monsters": [ { "monster": "mob.ashfang", "count": 1, "respawn_seconds": 600 } ]
+  },
+
+  {
+    "id": "loc.woodcutters_camp",
+    "name": "Woodcutters' Camp",
+    "description": "Abandoned tents and a cold fire. The axes were left behind in a hurry.",
+    "zone": "zone.whisperwood",
+    "exits": { "north": "loc.west_gate", "south": "loc.hollow_oak" },
+    "monsters": [ { "monster": "mob.twig_blight", "count": 1, "respawn_seconds": 60 } ]
+  },
+  {
+    "id": "loc.hollow_oak",
+    "name": "Hollow Oak",
+    "description": "A colossal dead oak, hollow inside. Twigs crawl out of the bark like insects.",
+    "zone": "zone.whisperwood",
+    "exits": { "north": "loc.woodcutters_camp", "east": "loc.wolf_run", "west": "loc.druid_circle" },
+    "monsters": [ { "monster": "mob.twig_blight", "count": 2, "respawn_seconds": 60 } ]
+  },
+  {
+    "id": "loc.wolf_run",
+    "name": "Wolf Run",
+    "description": "A trail of crushed ferns and fresh tracks. Howls echo between the trunks.",
+    "zone": "zone.whisperwood",
+    "exits": { "west": "loc.hollow_oak", "south": "loc.whisperwood_trail" },
+    "monsters": [ { "monster": "mob.dire_wolf", "count": 2, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.whisperwood_trail",
+    "name": "Whisperwood Trail",
+    "description": "A narrow path under towering oaks, leading out to the plains.",
+    "zone": "zone.whisperwood",
+    "exits": { "east": "loc.forest_edge", "north": "loc.wolf_run", "west": "loc.spider_thicket" },
+    "monsters": [
+      { "monster": "mob.dire_wolf", "count": 1, "respawn_seconds": 90 },
+      { "monster": "mob.twig_blight", "count": 1, "respawn_seconds": 60 }
+    ]
+  },
+  {
+    "id": "loc.spider_thicket",
+    "name": "Spider Thicket",
+    "description": "Webs as thick as rope hang between the branches. Something large skitters overhead.",
+    "zone": "zone.whisperwood",
+    "exits": { "east": "loc.whisperwood_trail", "west": "loc.fungal_glade" },
+    "monsters": [ { "monster": "mob.giant_spider", "count": 2, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.fungal_glade",
+    "name": "Fungal Glade",
+    "description": "Giant mushrooms glow softly in the gloom. A foul smell drifts up from a cave to the south.",
+    "zone": "zone.whisperwood",
+    "exits": { "east": "loc.spider_thicket", "north": "loc.druid_circle", "south": "loc.owlbear_den" },
+    "items": [ { "item": "item.glowcap_mushroom", "count": 3 } ],
+    "monsters": [ { "monster": "mob.giant_spider", "count": 1, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.druid_circle",
+    "name": "Druid's Circle",
+    "description": "A ring of standing stones in a sunlit clearing. No beast dares cross it.",
+    "zone": "zone.whisperwood",
+    "safe": true,
+    "exits": { "east": "loc.hollow_oak", "south": "loc.fungal_glade" },
+    "npcs": ["npc.druid"]
+  },
+  {
+    "id": "loc.owlbear_den",
+    "name": "Owlbear Den",
+    "description": "A cave strewn with bones and feathers. A furious hoot-roar shakes the walls.",
+    "zone": "zone.whisperwood",
+    "exits": { "north": "loc.fungal_glade" },
+    "monsters": [ { "monster": "mob.owlbear", "count": 1, "respawn_seconds": 300 } ]
+  },
+
+  {
+    "id": "loc.caravan_road",
+    "name": "Caravan Road",
+    "description": "A sandy road leaving the market for the desert. Broken carts line the way.",
+    "zone": "zone.sunscorched_wastes",
+    "exits": { "west": "loc.market", "south": "loc.oasis" },
+    "monsters": [ { "monster": "mob.gnoll_raider", "count": 1, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.oasis",
+    "name": "Hidden Oasis",
+    "description": "Palm trees around a clear spring. Nomads trade here under striped tents.",
+    "zone": "zone.sunscorched_wastes",
+    "safe": true,
+    "exits": { "north": "loc.caravan_road", "east": "loc.dune_sea", "south": "loc.bleached_bones" },
+    "items": [ { "item": "item.waterskin", "count": 2 } ],
+    "npcs": ["npc.nomad"]
+  },
+  {
+    "id": "loc.dune_sea",
+    "name": "Dune Sea",
+    "description": "Golden dunes as far as the eye can see. Cacti cling to the slopes.",
+    "zone": "zone.sunscorched_wastes",
+    "exits": { "west": "loc.oasis", "east": "loc.scorpion_canyon" },
+    "items": [ { "item": "item.cactus_fruit", "count": 2 } ],
+    "monsters": [
+      { "monster": "mob.gnoll_raider", "count": 1, "respawn_seconds": 90 },
+      { "monster": "mob.dust_mephit", "count": 1, "respawn_seconds": 90 }
+    ]
+  },
+  {
+    "id": "loc.scorpion_canyon",
+    "name": "Scorpion Canyon",
+    "description": "A red canyon where the rocks click and scuttle.",
+    "zone": "zone.sunscorched_wastes",
+    "exits": { "west": "loc.dune_sea", "south": "loc.sandstone_ruins" },
+    "items": [ { "item": "item.cactus_fruit", "count": 1 } ],
+    "monsters": [ { "monster": "mob.giant_scorpion", "count": 2, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.sandstone_ruins",
+    "name": "Sandstone Ruins",
+    "description": "Toppled statues of a forgotten pharaoh. Stairs lead east, down to a sealed tomb.",
+    "zone": "zone.sunscorched_wastes",
+    "exits": { "north": "loc.scorpion_canyon", "west": "loc.salt_flats", "east": "loc.sunken_tomb" },
+    "monsters": [ { "monster": "mob.gnoll_raider", "count": 2, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.salt_flats",
+    "name": "Salt Flats",
+    "description": "A blinding white plain of cracked salt. Dust devils dance on the horizon.",
+    "zone": "zone.sunscorched_wastes",
+    "exits": { "east": "loc.sandstone_ruins", "west": "loc.bleached_bones" },
+    "monsters": [ { "monster": "mob.dust_mephit", "count": 2, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.bleached_bones",
+    "name": "Bleached Bones",
+    "description": "The skeleton of some enormous beast, half-buried in sand. The misty pond glimmers to the west.",
+    "zone": "zone.sunscorched_wastes",
+    "exits": { "east": "loc.salt_flats", "north": "loc.oasis", "west": "loc.misty_pond" },
+    "monsters": [ { "monster": "mob.giant_scorpion", "count": 1, "respawn_seconds": 90 } ]
+  },
+  {
+    "id": "loc.sunken_tomb",
+    "name": "Sunken Tomb",
+    "description": "A cold burial chamber. Hieroglyphs warn of a curse on all who enter.",
+    "zone": "zone.sunscorched_wastes",
+    "exits": { "west": "loc.sandstone_ruins" },
+    "items": [ { "item": "item.sealed_sarcophagus", "count": 1 } ],
+    "monsters": [ { "monster": "mob.mummy_lord", "count": 1, "respawn_seconds": 420 } ]
   }
 ]

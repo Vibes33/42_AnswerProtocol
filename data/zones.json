@@ -10,5 +10,23 @@
     "name": "Verdant Plains",
     "description": "Rolling grassland south of the village, overrun by blobs.",
     "recommended_level": 2
+  },
+  {
+    "id": "zone.whisperwood",
+    "name": "Whisperwood",
+    "description": "An ancient forest west of the village. The trees whisper, and something with feathers and claws answers.",
+    "recommended_level": 4
+  },
+  {
+    "id": "zone.sunscorched_wastes",
+    "name": "Sunscorched Wastes",
+    "description": "Endless dunes east of the market, where gnolls raid caravans and a cursed tomb lies half-buried.",
+    "recommended_level": 7
+  },
+  {
+    "id": "zone.ashfang_peaks",
+    "name": "Ashfang Peaks",
+    "description": "Smoking mountains north of the village. Kobolds serve the red dragon who sleeps on the summit.",
+    "recommended_level": 10
   }
 ]

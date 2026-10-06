@@ -32,5 +32,66 @@
     "prerequisites": ["quest.blob_menace"],
     "objective": { "kind": "defeat", "target": "mob.blob_king", "count": 1 },
     "reward": { "xp": 200, "gold": 100, "items": [ { "item": "item.iron_sword", "count": 1 } ] }
+  },
+  {
+    "id": "quest.silk_for_druid",
+    "name": "Silk for the Druid",
+    "description": "Bring 3 Spider Silk to Elowen the Druid.",
+    "giver": "npc.druid",
+    "objective": { "kind": "fetch", "target": "item.spider_silk", "count": 3 },
+    "reward": { "xp": 120, "gold": 40, "items": [ { "item": "item.elven_cloak", "count": 1 } ] }
+  },
+  {
+    "id": "quest.owlbear_terror",
+    "name": "Terror of the Whisperwood",
+    "description": "Defeat the Owlbear in its den south of the Fungal Glade.",
+    "giver": "npc.druid",
+    "level_required": 6,
+    "objective": { "kind": "defeat", "target": "mob.owlbear", "count": 1 },
+    "reward": { "xp": 300, "gold": 120, "items": [ { "item": "item.greater_potion", "count": 2 } ] }
+  },
+  {
+    "id": "quest.scorpion_plague",
+    "name": "Scorpion Plague",
+    "description": "Defeat 3 Giant Scorpions in Scorpion Canyon.",
+    "giver": "npc.nomad",
+    "objective": { "kind": "defeat", "target": "mob.giant_scorpion", "count": 3 },
+    "reward": { "xp": 200, "gold": 60, "items": [ { "item": "item.scimitar", "count": 1 } ] }
+  },
+  {
+    "id": "quest.water_for_thrain",
+    "name": "Water for the Mountain",
+    "description": "Carry a Waterskin from the oasis to Thrain Stonebeard on the Windy Ledge.",
+    "giver": "npc.nomad",
+    "objective": { "kind": "deliver", "target": "item.waterskin", "count": 1, "turn_in": "npc.dwarf" },
+    "reward": { "xp": 150, "gold": 50 }
+  },
+  {
+    "id": "quest.tomb_of_ankhra",
+    "name": "The Tomb of Ankh-Ra",
+    "description": "Break the curse: defeat the Mummy Lord in the Sunken Tomb.",
+    "giver": "npc.nomad",
+    "level_required": 9,
+    "prerequisites": ["quest.scorpion_plague"],
+    "objective": { "kind": "defeat", "target": "mob.mummy_lord", "count": 1 },
+    "reward": { "xp": 500, "gold": 200, "items": [ { "item": "item.chain_mail", "count": 1 } ] }
+  },
+  {
+    "id": "quest.mithril_vein",
+    "name": "The Mithril Vein",
+    "description": "Bring 3 Mithril Ore to Thrain Stonebeard.",
+    "giver": "npc.dwarf",
+    "objective": { "kind": "fetch", "target": "item.mithril_ore", "count": 3 },
+    "reward": { "xp": 300, "gold": 80, "items": [ { "item": "item.greater_potion", "count": 2 } ] }
+  },
+  {
+    "id": "quest.slay_ashfang",
+    "name": "Dragonslayer",
+    "description": "Climb to the summit and slay Ashfang the Red.",
+    "giver": "npc.dwarf",
+    "level_required": 12,
+    "prerequisites": ["quest.mithril_vein"],
+    "objective": { "kind": "defeat", "target": "mob.ashfang", "count": 1 },
+    "reward": { "xp": 1200, "gold": 500, "items": [ { "item": "item.flame_tongue", "count": 1 } ] }
   }
 ]

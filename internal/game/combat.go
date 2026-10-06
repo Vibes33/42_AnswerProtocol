@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand/v2"
+	"slices"
 	"strings"
 	"time"
 
@@ -27,6 +28,8 @@ type attackReply struct {
 	Status     string   `json:"status"`
 	Target     string   `json:"target,omitempty"`
 	Log        []string `json:"log,omitempty"`
+	Move       string   `json:"move,omitempty"`
+	Mana       int      `json:"mana"`
 }
 
 // statusReply follows RFC 42TAP 5.4.6, plus the fields our own clients use.
@@ -41,6 +44,28 @@ type statusReply struct {
 	XPNext  int    `json:"xp_next"`
 	Gold    int    `json:"gold"`
 	Room    string `json:"room"`
+
+	// The character being played and its attacks, so clients can display them.
+	Character string            `json:"character"`
+	Class     string            `json:"class"`
+	Element   string            `json:"element"`
+	Moves     []moveInfo        `json:"moves"`
+	Equipment map[string]string `json:"equipment"` // slot -> item id
+	Bag       []bagEntry        `json:"bag"`
+}
+
+// moveInfo describes one of the character's attacks: already learned, or unlocked at a later level.
+type moveInfo struct {
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Type        string  `json:"type"`
+	Category    string  `json:"category"`
+	Power       int     `json:"power"`
+	ManaCost    int     `json:"mana_cost"`
+	Accuracy    float64 `json:"accuracy"`
+	Level       int     `json:"level"`
+	Learned     bool    `json:"learned"`
 }
 
 func (h *Hub) status(c *Client) {
@@ -50,8 +75,29 @@ func (h *Hub) status(c *Client) {
 		Mana: c.Mana, MaxMana: stats.Mana,
 		Level: c.Level, XP: c.XP, XPNext: h.world.Config.Leveling.XPToNext(c.Level),
 		Gold: c.Gold, Room: c.Room,
+		Character: c.Char.Name, Class: h.world.Archetypes[c.Char.Archetype].Name, Element: string(c.Char.Type),
+		Moves: h.movesOf(c), Equipment: h.equipmentOf(c), Bag: h.bagOf(c),
 	}
 	h.sendJSON(c, reply)
+}
+
+// movesOf lists every attack the character can learn, sorted by required level.
+func (h *Hub) movesOf(c *Client) []moveInfo {
+	moves := []moveInfo{}
+	for _, id := range sortedKeys(h.world.Moves) {
+		m := h.world.Moves[id]
+		if !m.AvailableTo(c.Char) {
+			continue
+		}
+		moves = append(moves, moveInfo{
+			ID: m.ID, Name: m.Name, Description: m.Description,
+			Type: string(m.Type), Category: string(m.Category),
+			Power: m.Power, ManaCost: h.manaCost(c, m), Accuracy: m.Accuracy,
+			Level: m.Learn.Level, Learned: c.Level >= m.Learn.Level,
+		})
+	}
+	slices.SortStableFunc(moves, func(a, b moveInfo) int { return a.Level - b.Level })
+	return moves
 }
 
 func (h *Hub) sendJSON(c *Client, v any) {
@@ -95,8 +141,10 @@ func (h *Hub) findMonster(room, query string) *MonsterInstance {
 }
 
 // attack resolves one full round: initiative decides who strikes first, ailments tick at the end.
-func (h *Hub) attack(c *Client, query string) {
-	if strings.TrimSpace(query) == "" {
+// "ATTACK <monster>" uses the basic attack; "ATTACK <monster> <move>" the chosen one.
+func (h *Hub) attack(c *Client, args string) {
+	query, moveID := splitAttack(args)
+	if query == "" {
 		c.send(errMissingArgument)
 		return
 	}
@@ -116,23 +164,30 @@ func (h *Hub) attack(c *Client, query string) {
 		return
 	}
 
-	stats := h.statsOf(c)
-	move := h.world.Moves[basicAttackMove]
+	move, failure := h.chooseMove(c, moveID)
+	if failure != "" {
+		c.send(failure)
+		return
+	}
+	c.Mana -= h.manaCost(c, move)
+
+	stats := h.combatStats(c)
 	var lines []string
 	damage := 0
 	playerFirst := stats.Speed >= target.Def.Stats.Speed
 
 	if playerFirst {
-		damage, lines = h.playerStrike(c, target, move, stats, lines)
+		damage, lines = h.playerAct(c, target, move, stats, lines)
 	}
 	if target.HP > 0 {
 		lines = h.monsterStrike(c, target, stats, lines)
 	}
 	if !playerFirst && c.HP > 0 && target.HP > 0 {
-		damage, lines = h.playerStrike(c, target, move, stats, lines)
+		damage, lines = h.playerAct(c, target, move, stats, lines)
 	}
 
 	lines = h.tickStatuses(c, target, lines)
+	tickBuffs(c)
 
 	status := "combat"
 	switch {
@@ -143,10 +198,14 @@ func (h *Hub) attack(c *Client, query string) {
 	case target.HP <= 0:
 		status = "victory"
 		lines = append(lines, h.killMonster(c, target)...)
+		c.Buffs = map[world.StatName]*buff{}
+		if h.world.Config.Combat.RefillManaAfterCombat {
+			c.Mana = h.statsOf(c).Mana
+		}
 	}
 
 	h.log.Info("combat_round", logging.Fields{
-		"player": c.Name, "room": c.Room, "monster": target.Def.ID,
+		"player": c.Name, "room": c.Room, "monster": target.Def.ID, "move": move.ID,
 		"damage": damage, "player_hp": max(0, c.HP), "monster_hp": max(0, target.HP),
 		"status": status, "log": lines,
 	})
@@ -155,20 +214,8 @@ func (h *Hub) attack(c *Client, query string) {
 	h.sendJSON(c, attackReply{
 		AttackerHP: max(0, c.HP), TargetHP: max(0, target.HP),
 		Damage: damage, Status: status, Target: target.Def.ID, Log: lines,
+		Move: move.ID, Mana: c.Mana,
 	})
-}
-
-func (h *Hub) playerStrike(c *Client, m *MonsterInstance, move *world.Move, stats world.Stats, lines []string) (int, []string) {
-	if c.Statuses["status.sleep"] > 0 {
-		return 0, append(lines, fmt.Sprintf("%s is asleep and cannot act", c.Name))
-	}
-	damage, note := h.computeDamage(move, c.Char.Type, stats, m.Def.Type, m.Def.Stats)
-	if damage == 0 {
-		return 0, append(lines, fmt.Sprintf("%s missed %s", c.Name, m.Def.Name))
-	}
-	m.HP -= damage
-	lines = append(lines, fmt.Sprintf("%s hit %s for %d%s", c.Name, m.Def.Name, damage, note))
-	return damage, h.applyEffects(move, nil, m, lines)
 }
 
 func (h *Hub) monsterStrike(c *Client, m *MonsterInstance, stats world.Stats, lines []string) []string {
@@ -305,8 +352,26 @@ func (h *Hub) killMonster(c *Client, m *MonsterInstance) []string {
 
 	lines := []string{fmt.Sprintf("%s defeated %s", c.Name, m.Def.Name)}
 	c.Gold += m.Def.Gold
-	lines = append(lines, fmt.Sprintf("%s gained %d XP and %d gold", c.Name, m.Def.XP, m.Def.Gold))
-	lines = append(lines, h.grantXP(c, m.Def.XP)...)
+
+	// Group share: the members present in the room each receive an equal share of the XP,
+	// with +10% per ally to reward playing together. The gold stays with the winner.
+	party := h.alliesHere(c, true)
+	share := m.Def.XP
+	if len(party) > 1 {
+		share = int(math.Ceil(float64(m.Def.XP) * (1 + 0.1*float64(len(party)-1)) / float64(len(party))))
+	}
+	lines = append(lines, fmt.Sprintf("%s gained %d XP and %d gold", c.Name, share, m.Def.Gold))
+	lines = append(lines, h.grantXP(c, share)...)
+	for _, ally := range party[1:] {
+		lines = append(lines, fmt.Sprintf("%s gained %d XP (group share)", ally.Name, share))
+		lines = append(lines, h.grantXP(ally, share)...)
+		ally.send(fmt.Sprintf("EVT GROUP XP %s %s %d", c.Name, m.Def.ID, share))
+	}
+	if len(party) > 1 {
+		h.log.Info("xp_shared", logging.Fields{
+			"player": c.Name, "monster": m.Def.ID, "group": c.Group.ID, "players": len(party), "xp_each": share,
+		})
+	}
 
 	for _, drop := range m.Def.Drops {
 		if rand.Float64() > drop.Chance {

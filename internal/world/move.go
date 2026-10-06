@@ -32,8 +32,13 @@ type LearnRule struct {
 }
 
 func (m *Move) LearnableBy(c *Character, level int) bool {
+	return m.AvailableTo(c) && level >= m.Learn.Level
+}
+
+// AvailableTo reports whether the character can ever learn the move, whatever its level.
+func (m *Move) AvailableTo(c *Character) bool {
 	r := m.Learn
-	if r == nil || level < r.Level {
+	if r == nil {
 		return false
 	}
 	if len(r.Characters) > 0 {

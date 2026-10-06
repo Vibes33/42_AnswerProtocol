@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 
 	"tap/internal/game"
 	"tap/internal/logging"
+	"tap/internal/web"
 	"tap/internal/world"
 )
 
@@ -16,6 +18,7 @@ const listenAddr = ":4242"
 
 func main() {
 	dataDir := flag.String("data", "data", "directory containing the world JSON files")
+	webAddr := flag.String("web", ":8042", "address of the web client served to every computer of the network (empty to disable)")
 	flag.Parse()
 
 	w, err := loadWorld(*dataDir)
@@ -41,6 +44,12 @@ func main() {
 	}
 
 	log.Printf("TAP server listening on %s (max clients: %s)", listenAddr, slots)
+	for _, ip := range web.LANIPs() {
+		log.Printf("other computers on the network can connect to %s%s", ip, listenAddr)
+	}
+	if *webAddr != "" {
+		go serveWeb(*webAddr)
+	}
 
 	for {
 		conn, err := ln.Accept()
@@ -105,4 +114,20 @@ func loadWorld(dir string) (*world.World, error) {
 		return nil, err
 	}
 	return w, nil
+}
+
+// serveWeb serves the web client: any browser of the network that opens this address plays on
+// this server, with nothing to install. If the port is taken, the game server runs without it.
+func serveWeb(addr string) {
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		log.Printf("web client disabled: %v", err)
+		return
+	}
+	_, port, _ := net.SplitHostPort(ln.Addr().String())
+	log.Printf("web client on http://localhost:%s", port)
+	for _, ip := range web.LANIPs() {
+		log.Printf("web client for the other computers: http://%s:%s", ip, port)
+	}
+	log.Printf("web client stopped: %v", http.Serve(ln, web.Handler("localhost"+listenAddr)))
 }

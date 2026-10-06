@@ -101,5 +101,124 @@
     "name": "Notice Board",
     "description": "Pinned notes: 'Blobs spotted in the plains. See the Elder.'",
     "category": "fixture", "rarity": "common", "obtainable": false, "price": 0
+  },
+  {
+    "id": "item.greater_potion",
+    "name": "Greater Potion",
+    "description": "A glowing crimson flask. Restores 150 HP.",
+    "category": "consumable", "rarity": "rare", "obtainable": true, "price": 60,
+    "usable_in_combat": true,
+    "effects": [ { "kind": "heal", "chance": 1.0, "amount": 150 } ]
+  },
+  {
+    "id": "item.glowcap_mushroom",
+    "name": "Glowcap Mushroom",
+    "description": "A softly glowing mushroom. Restores 15 mana.",
+    "category": "consumable", "rarity": "common", "obtainable": true, "price": 6,
+    "usable_in_combat": true,
+    "effects": [ { "kind": "restore_mana", "chance": 1.0, "amount": 15 } ]
+  },
+  {
+    "id": "item.cactus_fruit",
+    "name": "Cactus Fruit",
+    "description": "A juicy desert fruit. Restores 20 HP.",
+    "category": "consumable", "rarity": "common", "obtainable": true, "price": 5,
+    "usable_in_combat": true,
+    "effects": [ { "kind": "heal", "chance": 1.0, "amount": 20 } ]
+  },
+  {
+    "id": "item.waterskin",
+    "name": "Waterskin",
+    "description": "Cool spring water from the oasis. Restores 15 HP.",
+    "category": "consumable", "rarity": "common", "obtainable": true, "price": 6,
+    "effects": [ { "kind": "heal", "chance": 1.0, "amount": 15 } ]
+  },
+  {
+    "id": "item.wolf_pelt",
+    "name": "Wolf Pelt",
+    "description": "A thick grey pelt. Tanners pay well for it.",
+    "category": "material", "rarity": "common", "obtainable": true, "price": 8
+  },
+  {
+    "id": "item.spider_silk",
+    "name": "Spider Silk",
+    "description": "A coil of silk strong enough to bind a bear. The druid weaves it into cloaks.",
+    "category": "material", "rarity": "common", "obtainable": true, "price": 6
+  },
+  {
+    "id": "item.owlbear_feather",
+    "name": "Owlbear Feather",
+    "description": "A huge striped feather, proof that you survived the owlbear.",
+    "category": "material", "rarity": "uncommon", "obtainable": true, "price": 30
+  },
+  {
+    "id": "item.scorpion_stinger",
+    "name": "Scorpion Stinger",
+    "description": "A barbed stinger, still dripping. Alchemists brew antidotes from it.",
+    "category": "material", "rarity": "common", "obtainable": true, "price": 10
+  },
+  {
+    "id": "item.mithril_ore",
+    "name": "Mithril Ore",
+    "description": "A chunk of silvery ore, light as a feather and harder than steel.",
+    "category": "material", "rarity": "uncommon", "obtainable": true, "price": 25
+  },
+  {
+    "id": "item.dragon_scale",
+    "name": "Dragon Scale",
+    "description": "A red scale, warm to the touch. Worth a fortune.",
+    "category": "material", "rarity": "rare", "obtainable": true, "price": 120
+  },
+  {
+    "id": "item.scimitar",
+    "name": "Scimitar",
+    "description": "A curved desert blade, quick and sharp.",
+    "category": "equipment", "rarity": "uncommon", "obtainable": true, "price": 60,
+    "level_required": 4,
+    "equipment": { "slot": "weapon", "bonus": { "attack": 7, "speed": 1 }, "archetypes": ["arch.fighter", "arch.archer"] }
+  },
+  {
+    "id": "item.chain_mail",
+    "name": "Chain Mail",
+    "description": "Interlocking steel rings. Heavy, but it stops a spear.",
+    "category": "equipment", "rarity": "uncommon", "obtainable": true, "price": 110,
+    "level_required": 6,
+    "equipment": { "slot": "armor", "bonus": { "defense": 8, "magic_defense": 2 } }
+  },
+  {
+    "id": "item.elven_cloak",
+    "name": "Cloak of Elvenkind",
+    "description": "A grey-green cloak woven from spider silk. Its wearer moves like a shadow.",
+    "category": "equipment", "rarity": "rare", "obtainable": true, "price": 0,
+    "level_required": 4,
+    "equipment": { "slot": "accessory", "bonus": { "speed": 3, "magic_defense": 3 } }
+  },
+  {
+    "id": "item.ancient_scarab",
+    "name": "Ancient Scarab",
+    "description": "A golden scarab amulet from Ankh-Ra's tomb. It hums with old magic.",
+    "category": "equipment", "rarity": "epic", "obtainable": true, "price": 0,
+    "level_required": 8,
+    "equipment": { "slot": "accessory", "bonus": { "hp": 30, "magic_defense": 5 } }
+  },
+  {
+    "id": "item.flame_tongue",
+    "name": "Flame Tongue",
+    "description": "A legendary sword whose blade bursts into flame on command.",
+    "category": "equipment", "rarity": "legendary", "obtainable": true, "price": 0,
+    "level_required": 10,
+    "equipment": { "slot": "weapon", "bonus": { "attack": 18, "magic_attack": 6 }, "archetypes": ["arch.fighter"] }
+  },
+  {
+    "id": "item.sealed_sarcophagus",
+    "name": "Sealed Sarcophagus",
+    "description": "A stone coffin carved with warnings. It is far too heavy to move.",
+    "category": "fixture", "rarity": "common", "obtainable": false, "price": 0
+  },
+  {
+    "id": "item.dragon_hoard",
+    "name": "Dragon's Hoard",
+    "description": "A mountain of gold coins and jewels. Every coin is counted by its owner.",
+    "category": "fixture", "rarity": "common", "obtainable": false, "price": 0
   }
 ]

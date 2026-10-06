@@ -1,10 +1,10 @@
 package main
 
 import (
-	"bufio" // lecture ligne par ligne
-	"flag"  // arguments en ligne de commande
-	"fmt"   // affichage
-	"log"   // erreurs fatales
+	"bufio" // line-by-line reading
+	"flag"  // command-line arguments
+	"fmt"   // output
+	"log"   // fatal errors
 	"net"   // TCP
 	"os"    // stdin, exit
 )
@@ -26,7 +26,7 @@ func main() {
 		for scanner.Scan() {
 			line := scanner.Text()
 			if line == serverFull {
-				fmt.Println("\rServeur plein : le nombre maximum de joueurs est atteint")
+				fmt.Println("\rServer full: the maximum number of players has been reached")
 				os.Exit(1)
 			}
 			fmt.Printf("\r< %s\n> ", line)

@@ -34,6 +34,7 @@ const (
 	errNotConnected     = "ERR 202 NOT_CONNECTED"
 	errAlreadyConnected = "ERR 203 ALREADY_CONNECTED"
 	errInvalidName      = "ERR 204 INVALID_NAME"
+	errUnknownCharacter = "ERR 205 UNKNOWN_CHARACTER"
 	errUnknownCommand   = "ERR 400 UNKNOWN_COMMAND"
 	errMissingArgument  = "ERR 400 MISSING_ARGUMENT"
 
@@ -56,7 +57,9 @@ type Client struct {
 	HP       int
 	Mana     int
 	Gold     int
-	Statuses map[string]int // status id -> remaining turns
+	Statuses map[string]int             // status id -> remaining turns
+	Equipped map[world.EquipSlot]string // slot -> worn item instance id
+	Buffs    map[world.StatName]*buff   // bonus temporaires de combat (Peau de pierre, Cri de guerre…)
 	Quests   map[string]*QuestProgress
 
 	talkIndex map[string]int // npc id -> next dialogue line
@@ -186,7 +189,7 @@ func (h *Hub) noteCommand(c *Client, verb, args string) {
 	}
 }
 
-// Run est la boucle de jeu : une seule goroutine, propriétaire de tout l'état mutable.
+// Run is the game loop: a single goroutine that owns all the mutable state.
 func (h *Hub) Run() {
 	for m := range h.inbox {
 		switch m.kind {
@@ -202,8 +205,8 @@ func (h *Hub) Run() {
 	}
 }
 
-// Serve tourne dans la goroutine de la connexion : elle ne fait que lire des lignes
-// et les transmettre au hub. Elle ne touche jamais à l'état du jeu.
+// Serve runs in the connection's goroutine: it only reads lines and hands them to the hub.
+// It never touches the game state.
 func (h *Hub) Serve(conn net.Conn) {
 	c := &Client{Addr: conn.RemoteAddr().String(), out: make(chan string, outBuffer), log: h.log}
 
@@ -219,12 +222,15 @@ func (h *Hub) Serve(conn net.Conn) {
 	}
 
 	h.inbox <- message{client: c, kind: msgLeave}
-	<-writerDone // le hub ferme c.out, ce qui termine writeLoop
+	<-writerDone // the hub closes c.out, which ends writeLoop
 	conn.Close()
 }
 
 func writeLoop(conn net.Conn, out <-chan string, done chan<- struct{}) {
 	defer close(done)
+	// Closing here (after the last message, e.g. "OK bye") unblocks Serve's read: otherwise,
+	// after QUIT, the connection would stay open until the client cut it.
+	defer conn.Close()
 	for msg := range out {
 		if _, err := conn.Write([]byte(msg + "\n")); err != nil {
 			return
@@ -242,7 +248,9 @@ func (h *Hub) handle(c *Client, line string) {
 	h.noteCommand(c, verb, args)
 	h.reviveMonsters()
 
-	if !c.authenticated() && verb != "CONNECT" {
+	// CHARACTERS is allowed before CONNECT: the client shows the character choice on the
+	// login screen, next to the name.
+	if !c.authenticated() && verb != "CONNECT" && verb != "CHARACTERS" {
 		c.send(errNotConnected)
 		return
 	}
@@ -250,6 +258,8 @@ func (h *Hub) handle(c *Client, line string) {
 	switch verb {
 	case "CONNECT":
 		h.connect(c, args)
+	case "CHARACTERS":
+		h.characters(c)
 	case "LOOK":
 		h.look(c)
 	case "MOVE":
@@ -274,6 +284,14 @@ func (h *Hub) handle(c *Client, line string) {
 		h.quest(c, args)
 	case "QUESTS":
 		h.quests(c)
+	case "USE":
+		h.use(c, args)
+	case "SHOP":
+		h.shop(c)
+	case "BUY":
+		h.buy(c, args)
+	case "SELL":
+		h.sell(c, args)
 	case "WHO":
 		c.send(fmt.Sprintf("OK players=%d", len(h.byName)))
 	case "QUIT":
@@ -284,15 +302,25 @@ func (h *Hub) handle(c *Client, line string) {
 	}
 }
 
-func (h *Hub) connect(c *Client, name string) {
+// connect accepts "CONNECT <name> [<character>]". The character (id or name) is an extension:
+// an RFC client only sends the name and gets the default character. A name never contains a
+// space, so the second word cannot be part of it.
+func (h *Hub) connect(c *Client, args string) {
 	if c.authenticated() {
 		c.send(errAlreadyConnected)
 		return
 	}
-	name = strings.TrimSpace(name)
+	name, choice, _ := strings.Cut(strings.TrimSpace(args), " ")
 	if !validName(name) {
 		c.send(errInvalidName)
 		return
+	}
+	char := h.world.Characters[h.world.Config.DefaultCharacter]
+	if choice = strings.TrimSpace(choice); choice != "" {
+		if char = h.findCharacter(choice); char == nil {
+			c.send(errUnknownCharacter)
+			return
+		}
 	}
 	// Names are unique regardless of case, so "alice" and "Alice" cannot coexist.
 	key := strings.ToLower(name)
@@ -304,8 +332,8 @@ func (h *Hub) connect(c *Client, name string) {
 	c.Name = name
 	c.Room = h.world.Config.StartRoom
 	h.byName[key] = c
-	h.initPlayer(c)
-	h.log.Info("player_connected", logging.Fields{"addr": c.Addr, "player": c.Name, "room": c.Room})
+	h.initPlayer(c, char)
+	h.log.Info("player_connected", logging.Fields{"addr": c.Addr, "player": c.Name, "room": c.Room, "character": char.ID})
 
 	c.send("OK connected")
 	h.broadcastRoom(c.Room, "EVT ROOM PRESENCE ENTER "+c.Name, c)
@@ -362,6 +390,7 @@ func (h *Hub) move(c *Client, direction string) {
 	c.send("OK room=" + dest)
 	h.broadcastRoom(from, "EVT ROOM PRESENCE LEAVE "+c.Name, c)
 	h.broadcastRoom(dest, "EVT ROOM PRESENCE ENTER "+c.Name, c)
+	h.notifyGroupMove(c)
 }
 
 func (h *Hub) take(c *Client, query string) {
