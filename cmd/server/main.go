@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"tap/internal/game"
+	"tap/internal/logging"
 	"tap/internal/world"
 )
 
@@ -31,7 +32,7 @@ func main() {
 	}
 	defer ln.Close()
 
-	hub := game.NewHub(w)
+	hub := game.NewHub(w, logging.New(os.Stdout))
 	go hub.Run()
 
 	var slots limiter
