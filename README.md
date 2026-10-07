@@ -55,7 +55,9 @@ and can be disabled with the server's strict mode._
   | 403 | `LEVEL_TOO_LOW` | `USE` on equipment that requires a higher level |
   | 403 | `WRONG_CLASS` | `USE` on equipment the character's class cannot wear |
   | 409 | `ITEM_NOT_USABLE` | `USE` on an item with no effect and no equipment slot (materials, fixtures) |
-  | 403 | `MOVE_NOT_LEARNED` | `ATTACK <npc> <move>` with a move the character has not learned yet |
+  | 403 | `MOVE_NOT_LEARNED` | `ATTACK <npc> <move>` with a move that is not in one of the character's attack slots |
+  | 404 | `MOVE_NOT_OFFERED` | `LEARN <move>` with a move that is not waiting to be learned |
+  | 409 | `MOVE_SLOTS_FULL` | `LEARN <move>` without naming the attack to replace while every slot is taken |
   | 404 | `MOVE_NOT_FOUND` | `ATTACK <npc> <move>` with an unknown move id |
   | 404 | `NO_MERCHANT` | `SHOP`, `BUY` or `SELL` in a room without a merchant |
   | 404 | `ITEM_NOT_SOLD` | `BUY` an item the merchant does not sell |
@@ -88,8 +90,15 @@ and can be disabled with the server's strict mode._
   sends a plain `CONNECT` to other groups' servers.
 
 - **Choosing an attack.** `ATTACK <npc>` keeps the RFC behaviour (basic attack). `ATTACK <npc> <move-id>`
-  (`ATTACK mob.green_blob move.rock_smash`) uses one of the character's learned moves and costs its mana.
+  (`ATTACK mob.green_blob move.rock_smash`) uses one of the character's equipped moves and costs its mana.
   No NPC name starts with `move.`, so the last word is never ambiguous. The reply adds `move` and `mana`.
+
+- **Three attack slots.** A character carries at most `combat.max_equipped_moves` attacks (`data/game.json`,
+  default 3). The attacks unlocked at level 1 fill the slots; an attack unlocked later takes a free slot, or,
+  when every slot is taken, waits as an offer (`move_offers` in `STATUS`, and a line in the `ATTACK`/`QUEST`
+  log). `LEARN <move-id> <replaced-move-id>` learns it in place of an equipped attack, `LEARN <move-id> skip`
+  turns it down, and `LEARN <move-id>` alone takes a free slot. A replaced or skipped attack is never offered
+  again. Replies: `OK learned=<id> forgot=<id>`, `OK skipped=<id>`, `OK learned=<id>`.
 
 - **Using items.** `USE <item>` applies a consumable's effects (heal, mana, cure…) and uses it up, or
   equips a piece of equipment, whose bonuses then add to the player's stats; using worn equipment again takes
@@ -107,7 +116,8 @@ and can be disabled with the server's strict mode._
 
 - **`STATUS` describes the character.** Besides the RFC fields, the reply carries `character`, `class`,
   `element` and `moves` (every attack the character can learn, with its power, mana cost and the level that
-  unlocks it), so clients can show who the player is and which attacks they have.
+  unlocks it, plus `equipped` and `offered`), `move_slots`, `equipped_moves` (attack ids in slot order) and
+  `move_offers`, so clients can show who the player is and which attacks they have.
 
 - **Monsters are listed as NPCs.** RFC 42TAP has a single `npcs` field, so `LOOK` lists peaceful NPCs
   and hostile monsters together. They are separate files in the world data (`npcs.json`,

@@ -36,7 +36,7 @@
     pending: [], map: {}, here: null, room: null, players: [], items: [], npcs: [],
     inv: [], status: {}, quests: [], questInfo: {}, serverCount: 0, group: null, invite: null,
     target: null, sheet: null, tab: 'room', scope: 'ROOM', log: [], unread: 0, dialogue: null, mobHp: {},
-    lookAsked: false, announced: false, characters: null, charId: null, wantLogin: false, attackMenu: false, shop: null, party: null, tilt: localStorage.getItem('tap.tilt') !== 'flat', bounds: null
+    lookAsked: false, announced: false, characters: null, charId: null, wantLogin: false, attackMenu: false, offerKey: '', shop: null, party: null, tilt: localStorage.getItem('tap.tilt') !== 'flat', bounds: null
   };
 
   // ---------------------------------------------------------------- transport
@@ -149,6 +149,10 @@
       case 'STATUS': {
         const v = parse(data);
         if (v && typeof v === 'object') S.status = v;
+        // A new attack unlocked while the three slots are taken: open the choice once per offer.
+        const offers = (S.status.move_offers || []).join(' ');
+        if (offers !== S.offerKey) { S.offerKey = offers; if (offers) S.sheet = 'learn'; }
+        if (!offers && S.sheet === 'learn') S.sheet = null;
         // On the first reply, announce the character being played (fields added by our server).
         if (v && v.character && !S.announced) {
           S.announced = true;
@@ -175,6 +179,13 @@
         break;
       }
       case 'GROUP': applyGroup(arg, data); break;
+      case 'LEARN': {
+        const [id, how] = arg.split(' ');
+        const forgot = (/forgot=(\S+)/.exec(data) || [])[1];
+        addLog('LEARN', how === 'skip' ? `${moveName(id)} skipped` : `${moveName(id)} learned${forgot ? ' in place of ' + moveName(forgot) : ''}`);
+        send('STATUS');
+        break;
+      }
       case 'QUIT': S.quitting = true; break; // the server then closes: onClosed shows the screen
       case 'CHAT': break; // the message comes back as EVT … CHAT
       default: addLog(verb || 'OK', data);
@@ -473,7 +484,7 @@
     $('#xpLabel').textContent = st.xp != null ? `XP ${st.xp}${st.xp_next ? ' / ' + st.xp_next : ''}` : '';
     $('#goldLabel').textContent = st.gold != null ? st.gold + ' gold' : '';
     $('#nav').innerHTML = NAV.map(([id, label, key]) => {
-      const dot = id === 'group' && S.invite ? '<span class="dot"></span>' : '';
+      const dot = (id === 'group' && S.invite) || (id === 'moves' && offeredMoves().length) ? '<span class="dot"></span>' : '';
       return `<button class="nav-btn${S.sheet === id ? ' on' : ''}" data-act="nav" data-id="${id}"><span class="lbl">${label}</span>${dot}<span class="kbd mono">${key}</span></button>`;
     }).join('');
     $('#serverLine').textContent = (S.demo ? 'DEMO · ' : '') + S.addr + (S.serverCount ? ` · ${S.serverCount} online` : '');
@@ -530,15 +541,32 @@
       }
       case 'moves': {
         const st = S.status, moves = st.moves || [];
+        const slots = equippedMoves(), offers = offeredMoves();
+        const upcoming = moves.filter((m) => !m.learned);
+        const forgotten = st.equipped_moves ? moves.filter((m) => m.learned && !m.equipped && !m.offered) : [];
         title = 'Attacks';
         sub = [st.character, st.class, cap(st.element)].filter(Boolean).join(' · ');
-        body = moves.length ? moves.map((m) => {
-          const stats = m.category === 'status' ? `Mana ${m.mana_cost}` : `Power ${m.power} · Mana ${m.mana_cost} · Accuracy ${Math.round(m.accuracy * 100)}%`;
-          return `<div class="card"${m.learned ? '' : ' style="opacity:.45"'}><div class="card-top"><span class="card-t">${esc(m.name)}</span><span class="card-m mono">${m.learned ? 'LEARNED' : 'LV. ' + m.level}</span></div>`
-            + `<span class="card-d">${esc(m.description)}</span>`
-            + `<span class="card-m">${esc(cap(m.type))} · ${esc(CATEGORY[m.category] || m.category)} · ${stats}</span></div>`;
-        }).join('') + '<span class="note">Greyed-out attacks unlock as you level up.</span>'
-          : '<span class="note">This server does not send the list of attacks.</span>';
+        if (!moves.length) { body = '<span class="note">This server does not send the list of attacks.</span>'; break; }
+        if (offers.length) body += `<div class="card inverse"><div class="card-top"><span class="card-t">${esc(offers[0].name)}</span><span class="card-m mono">NEW</span></div><span class="card-d">You can learn a new attack.</span><button class="btn-primary sm" style="background:#000;color:#fff" data-act="nav" data-id="learn">Choose</button></div>`;
+        body += `<span class="pick-h">Equipped · ${slots.length}/${st.move_slots || 3}</span>` + slots.map((m) => moveCard(m, 'EQUIPPED')).join('');
+        if (upcoming.length) body += '<span class="pick-h">Upcoming</span>' + upcoming.map((m) => moveCard(m, 'LV. ' + m.level, true)).join('');
+        if (forgotten.length) body += '<span class="pick-h">Forgotten</span>' + forgotten.map((m) => moveCard(m, 'FORGOTTEN', true)).join('');
+        body += `<span class="note">You carry ${st.move_slots || 3} attacks at most. A new one replaces an equipped attack, or is skipped.</span>`;
+        break;
+      }
+      case 'learn': {
+        const offer = offeredMoves()[0];
+        if (!offer) { S.sheet = null; return renderSheet(); }
+        const slots = equippedMoves(), max = S.status.move_slots || 3, full = slots.length >= max;
+        const left = offeredMoves().length;
+        title = 'New attack'; sub = `Level ${S.status.level ?? '?'}${left > 1 ? ` · ${left} to choose` : ''}`;
+        body = `<div class="card inverse"><div class="card-top"><span class="card-t">${esc(offer.name)}</span><span class="card-m mono">NEW</span></div><span class="card-d">${esc(offer.description)}</span><span class="card-m mono">${esc(moveInfo(offer))}</span></div>`;
+        body += full
+          ? `<span class="pick-h">Forget an attack to learn ${esc(offer.name)}</span><div class="list">${slots.map((m) =>
+            `<div class="row item static"><div class="row-main"><span class="row-name">${esc(m.name)}</span><span class="row-sub mono">${esc(moveInfo(m))}</span></div><button class="take" data-act="learn" data-id="${esc(offer.id)}" data-cmd="${esc(m.id)}">Replace</button></div>`).join('')}</div>`
+          : `<button class="btn-primary sm" data-act="learn" data-id="${esc(offer.id)}">Learn ${esc(offer.name)}</button>`;
+        body += `<button class="btn-ghost sm" data-act="learn" data-id="${esc(offer.id)}" data-cmd="skip">Skip ${esc(offer.name)}</button>
+          <span class="note">A forgotten or skipped attack cannot be learned again.</span>`;
         break;
       }
       case 'who': {
@@ -595,6 +623,7 @@
 
     const k = t && t.kind;
     if (k !== 'mob') S.attackMenu = false;
+    $('#actions').classList.toggle('moves', S.attackMenu);
     if (S.attackMenu) { renderMoves(); return; }
     const actions = [
       ['Take', 'TAKE', k === 'item', k === 'item'],
@@ -618,89 +647,112 @@
     return it ? it.usable : true;
   }
 
-  // Pokémon-style attack menu: the bar is redrawn with the character's learned attacks (mana
-  // cost included) and a Back button.
-  function learnedMoves() {
-    const learned = (S.status.moves || []).filter((m) => m.learned);
-    if (learned.length <= 9) return learned;
-    const basic = learned.filter((m) => m.mana_cost === 0).slice(0, 1); // keep one free attack
-    return basic.concat(learned.filter((m) => !basic.includes(m)).slice(-(9 - basic.length)));
+  // The attacks carried into combat, in slot order. A server without slots (no
+  // equipped_moves field) gets the first three learned attacks.
+  function equippedMoves() {
+    const moves = S.status.moves || [];
+    if (!S.status.equipped_moves) return moves.filter((m) => m.learned).slice(0, 3);
+    return S.status.equipped_moves.map((id) => moves.find((m) => m.id === id)).filter(Boolean);
+  }
+  function offeredMoves() {
+    const moves = S.status.moves || [];
+    return (S.status.move_offers || []).map((id) => moves.find((m) => m.id === id)).filter(Boolean);
+  }
+  function moveName(id) {
+    const m = (S.status.moves || []).find((x) => x.id === id);
+    return m ? m.name : human(id);
+  }
+  function moveInfo(m) {
+    return [String(m.type).toUpperCase(), (CATEGORY[m.category] || m.category).toUpperCase(), m.category === 'status' ? '' : 'POW ' + m.power, m.mana_cost + ' MP'].filter(Boolean).join(' · ');
+  }
+  function moveCard(m, tag, dim) {
+    return `<div class="card"${dim ? ' style="opacity:.45"' : ''}><div class="card-top"><span class="card-t">${esc(m.name)}</span><span class="card-m mono">${tag}</span></div>`
+      + `<span class="card-d">${esc(m.description)}</span><span class="card-m mono">${esc(moveInfo(m))}</span></div>`;
   }
 
+  // Pokémon-style attack menu: the bar becomes three large attack slots and a Back button.
   function renderMoves() {
     const mana = S.status.mana ?? 0;
-    const moves = learnedMoves();
-    $('#actions').innerHTML = moves.map((m) => {
+    const moves = equippedMoves();
+    const max = S.status.move_slots || 3;
+    let h = '';
+    for (let i = 0; i < max; i++) {
+      const m = moves[i];
+      if (!m) { h += '<button class="mv empty" disabled><span class="mv-name">Empty slot</span></button>'; continue; }
       const on = mana >= m.mana_cost;
-      const info = `${String(m.type).toUpperCase()} · ${m.category === 'status' ? 'SUPPORT' : 'POW ' + m.power} · ${m.mana_cost} MP`;
-      return `<button class="ac${on ? ' on' : ''}${on && m.category !== 'status' ? ' primary' : ''}" ${on ? `data-act="use-move" data-id="${esc(m.id)}"` : 'disabled'} title="${esc(m.description)}"><span>${esc(m.name)}</span><small>${info}</small></button>`;
-    }).join('') + '<button class="ac on" data-act="attack-back"><span>Back</span><small>ESC</small></button>';
+      h += `<button class="mv${on ? ' on' : ''}${on && m.category !== 'status' ? ' primary' : ''}" ${on ? `data-act="use-move" data-id="${esc(m.id)}"` : 'disabled'} title="${esc(m.name + ' — ' + (CATEGORY[m.category] || m.category) + '. ' + m.description)}">`
+        + `<span class="mv-top mono"><span>${esc(String(m.type).toUpperCase())}</span><span>${i + 1}</span></span>`
+        + `<span class="mv-name">${esc(m.name)}</span>`
+        + `<span class="mv-foot mono">${on ? (m.category === 'status' ? 'SUPPORT' : 'POW ' + m.power) + ' · ' + m.mana_cost + ' MP' : 'NO MANA · ' + m.mana_cost + ' MP'}</span></button>`;
+    }
+    $('#actions').innerHTML = h + '<button class="ac on" data-act="attack-back"><span>Back</span><small>ESC</small></button>';
   }
 
+  // Fixed layout: every block keeps its place from one room to the next and the panel never
+  // scrolls. The four lists sit in a 2×2 grid; only a crowded list scrolls inside its own box.
   function renderRoom() {
     const view = $('#roomView');
     view.hidden = S.tab !== 'room';
     $('#logView').hidden = S.tab !== 'log';
     if (!S.room) { view.innerHTML = ''; return; }
-    const scroll = view.scrollTop;
+    const keep = [...view.querySelectorAll('.slot .list')].map((l) => l.scrollTop);
     const r = S.room;
     const sel = (k, id) => S.target && S.target.kind === k && S.target.id === id ? ' sel' : '';
     const hostile = r.counts && r.counts.mob > 0;
-    const exits = Object.entries(r.exits);
-    let h = `<div class="rh"><div class="rh-top"><span>Current room</span><span class="mono">${coordOf(S.here)}</span></div>
-      <span class="rh-name">${esc(r.name)}</span>
-      <div class="pills"><span class="pill strong${hostile ? ' inv' : ''}">${hostile ? 'Hostile area' : 'Calm area'}</span><span class="pill">${exits.length} exit${exits.length > 1 ? 's' : ''}</span></div>
-      <span class="rh-desc">${esc(r.desc)}</span></div>`;
-    h += renderParty();
-    if (S.dialogue) h += `<div class="bubble"><b>${esc(S.dialogue.name)}</b><span>"${esc(S.dialogue.text)}"</span></div>`;
-    h += `<div class="sec"><span class="sec-h">Exits</span><div class="exits">${exits.map(([d, dest]) =>
-      `<button class="exit" data-act="move" data-dir="${esc(d)}"><small>${DIR_LABEL[d.toLowerCase()] || esc(d.toUpperCase())}</small><span>${esc(S.map[dest] ? S.map[dest].name : human(dest))}</span></button>`).join('')}</div></div>`;
-    if (S.players.length) h += `<div class="sec"><span class="sec-h">Players here</span><div class="list">${S.players.map((p) =>
-      `<div class="row${sel('player', p)}" data-act="select" data-kind="player" data-id="${esc(p)}"><div class="ring">${esc(p[0].toUpperCase())}</div><span class="row-name" style="flex:1">${esc(p)}</span></div>`).join('')}</div></div>`;
-    const npcs = counted(S.npcs.filter((x) => !isMob(x)));
-    if (npcs.length) h += `<div class="sec"><span class="sec-h">Characters</span><div class="list">${npcs.map(([id]) =>
-      `<div class="row col${sel('npc', id)}" data-act="select" data-kind="npc" data-id="${esc(id)}"><div class="row-top"><span class="row-name">${esc(human(id))}</span><span class="row-meta mono">NPC</span></div><span class="row-sub mono">${esc(id)}</span></div>`).join('')}</div></div>`;
-    const mobs = counted(S.npcs.filter(isMob));
-    if (mobs.length) h += `<div class="sec"><span class="sec-h">Monsters</span><div class="list">${mobs.map(([id, n]) => {
+    const slot = (title, rows, empty) => `<div class="sec slot"><span class="sec-h">${title}${rows.length ? ` <em class="mono">${rows.length}</em>` : ''}</span>`
+      + (rows.length ? `<div class="list">${rows.join('')}</div>` : `<div class="list none"><span>${empty}</span></div>`) + '</div>';
+
+    const npcs = counted(S.npcs.filter((x) => !isMob(x))).map(([id]) =>
+      `<div class="row cmp${sel('npc', id)}" data-act="select" data-kind="npc" data-id="${esc(id)}"><span class="row-name">${esc(human(id))}</span></div>`);
+    const mobs = counted(S.npcs.filter(isMob)).map(([id, n]) => {
       const hp = S.mobHp[id];
-      const bar = hp ? `<div class="hp"><div class="track"><div class="fill" style="width:${hp.max ? Math.round(hp.hp / hp.max * 100) : 100}%"></div></div><span class="mono">${hp.hp}/${hp.max}</span></div>` : '<span class="row-sub">HP unknown — attack to reveal them</span>';
-      return `<div class="row col${sel('mob', id)}" data-act="select" data-kind="mob" data-id="${esc(id)}"><div class="row-top"><span class="row-name">${esc(human(id))}${n > 1 ? ` <em>×${n}</em>` : ''}</span><span class="row-meta mono">${esc(id)}</span></div>${bar}</div>`;
-    }).join('')}</div></div>`;
-    const items = counted(S.items);
-    if (items.length) h += `<div class="sec"><span class="sec-h">Items on the ground</span><div class="list">${items.map(([id, n]) =>
-      `<div class="row item${sel('item', id)}" data-act="select" data-kind="item" data-id="${esc(id)}"><div class="row-main"><span class="row-name">${esc(human(id))} <em>×${n}</em></span><span class="row-sub mono">${esc(id)}</span></div><button class="take" data-act="take" data-id="${esc(id)}">Take</button></div>`).join('')}</div></div>`;
-    view.innerHTML = h;
-    view.scrollTop = scroll;
+      const bar = hp ? `<div class="hp"><div class="track"><div class="fill" style="width:${hp.max ? Math.round(hp.hp / hp.max * 100) : 100}%"></div></div><span class="mono">${hp.hp}/${hp.max}</span></div>` : '<span class="row-sub mono">HP ?</span>';
+      return `<div class="row cmp col${sel('mob', id)}" data-act="select" data-kind="mob" data-id="${esc(id)}"><span class="row-name">${esc(human(id))}${n > 1 ? ` <em>×${n}</em>` : ''}</span>${bar}</div>`;
+    });
+    const items = counted(S.items).map(([id, n]) =>
+      `<div class="row cmp${sel('item', id)}" data-act="select" data-kind="item" data-id="${esc(id)}" data-take="${esc(id)}" title="Double-click to take"><span class="row-name">${esc(human(id))}${n > 1 ? ` <em>×${n}</em>` : ''}</span></div>`);
+    const players = S.players.map((p) =>
+      `<div class="row cmp${sel('player', p)}" data-act="select" data-kind="player" data-id="${esc(p)}"><div class="ring">${esc(p[0].toUpperCase())}</div><span class="row-name">${esc(p)}</span></div>`);
+
+    view.innerHTML = `<div class="rh"><div class="rh-top"><span>Current room · ${coordOf(S.here)}</span><span class="pill strong${hostile ? ' inv' : ''}">${hostile ? 'Hostile' : 'Calm'}</span></div>
+        <span class="rh-name" title="${esc(r.name)}">${esc(r.name)}</span></div>`
+      + renderParty()
+      + (S.dialogue
+        ? `<div class="bubble" title="${esc(S.dialogue.text)}"><b>${esc(S.dialogue.name)}</b><span>"${esc(S.dialogue.text)}"</span></div>`
+        : '<div class="bubble idle"><b>Dialogue</b><span>Select a character, then Talk.</span></div>')
+      + `<div class="slots">${slot('Characters', npcs, 'Nobody')}${slot('Monsters', mobs, 'None')}${slot('Items', items, 'Nothing')}${slot('Players', players, 'Alone')}</div>`;
+    view.querySelectorAll('.slot .list').forEach((l, i) => { l.scrollTop = keep[i] || 0; });
+    fitDialogue(view.querySelector('.bubble:not(.idle) span'));
   }
 
-  // Group map (in place of the illustration): the explored rooms in miniature, your tile in white
-  // and your allies' tiles marked with their initial, then the list of members.
+  // The bubble has a fixed height (3 lines fit every NPC of our world); a longer reply
+  // shrinks its text instead of being cut, so the whole line stays readable.
+  function fitDialogue(el) {
+    if (!el) return;
+    for (let size = 14; size > 9 && el.scrollHeight > el.clientHeight; size--) el.style.fontSize = size - 1 + 'px';
+  }
+
+  // Group map: the explored rooms in miniature, your tile in white and your allies' tiles marked
+  // with their initial, then one line of allies. Fixed size, whatever the map's shape.
   function renderParty() {
     const members = S.party ? S.party.members.filter((m) => !same(m.name, S.name)) : [];
     const nodes = Object.entries(S.map);
-    if (!nodes.length) return '';
     const xs = nodes.map(([, n]) => n.pos[0]), ys = nodes.map(([, n]) => n.pos[1]);
     const minX = Math.min(...xs), minY = Math.min(...ys);
     const cols = Math.max(...xs) - minX + 1, rows = Math.max(...ys) - minY + 1;
-    const cell = Math.max(12, Math.min(30, Math.floor(296 / cols)));
+    const cell = Math.max(6, Math.min(26, Math.floor(296 / cols), Math.floor(92 / rows)));
     const allies = {};
     members.forEach((m) => { (allies[m.room] = allies[m.room] || []).push(m); });
     const cells = nodes.map(([id, n]) => {
       const here = id === S.here, mates = allies[id] || [];
       const cls = 'mm-cell' + (n.visited ? '' : ' fog') + (here ? ' me' : '') + (mates.length ? ' ally' : '');
-      const label = mates.length ? esc(mates.map((m) => m.name[0].toUpperCase()).join('')) : here ? esc((S.name[0] || '').toUpperCase()) : '';
+      const label = cell < 14 ? '' : mates.length ? esc(mates.map((m) => m.name[0].toUpperCase()).join('')) : here ? esc((S.name[0] || '').toUpperCase()) : '';
       return `<div class="${cls}" title="${esc(n.name)}" style="left:${(n.pos[0] - minX) * cell}px;top:${(n.pos[1] - minY) * cell}px;width:${cell - 3}px;height:${cell - 3}px">${label}</div>`;
     }).join('');
-    const list = members.map((m) => {
-      const pos = S.map[m.room] ? coordOf(m.room) : 'off map';
-      const pct = m.max_hp ? Math.round(m.hp / m.max_hp * 100) : 0;
-      return `<div class="row col static"><div class="row-top"><span class="row-name">${esc(m.name)}${m.leader ? ' <em>leader</em>' : ''}</span><span class="row-meta mono">${esc(pos)}</span></div>`
-        + `<span class="row-sub">${esc(m.character || '')} · lv. ${m.level} · ${esc(m.room_name || human(m.room))}${m.room === S.here ? ' (here)' : ''}</span>`
-        + `<div class="hp"><div class="track"><div class="fill" style="width:${pct}%"></div></div><span class="mono">${m.hp}/${m.max_hp}</span></div></div>`;
-    }).join('');
-    return `<div class="sec"><span class="sec-h">Group map</span>
-      <div class="mm"><div class="mm-grid" style="width:${cols * cell}px;height:${rows * cell}px">${cells}</div></div>
-      ${members.length ? `<div class="list">${list}</div>` : `<span class="note">${S.group ? 'Your allies will show up here once they join you.' : 'Create or join a group to see where your allies are.'}</span>`}</div>`;
+    const strip = members.length
+      ? members.map((m) => `<span class="ally" title="${esc(m.name)} · ${esc(m.room_name || human(m.room))}"><b>${esc(m.name[0].toUpperCase())}</b>${esc(m.name)} <i class="mono">${m.max_hp ? Math.round(m.hp / m.max_hp * 100) : 0}%</i></span>`).join('')
+      : `<span class="ally-none">${S.group ? 'No ally has joined yet' : 'No group'}</span>`;
+    return `<div class="mm"><div class="mm-box"><div class="mm-grid" style="width:${cols * cell}px;height:${rows * cell}px">${cells}</div></div><div class="allies">${strip}</div></div>`;
   }
 
   function renderTabs() {
@@ -724,7 +776,7 @@
     if (cmd === 'GROUP CREATE' || cmd === 'GROUP LEAVE') return send(cmd);
     if (cmd === 'SHOP') return send('SHOP'); // the merchant is the one in the room
     // With the list of attacks (our server), Attack opens the menu; otherwise the RFC basic attack.
-    if (cmd === 'ATTACK' && t && learnedMoves().length) { S.attackMenu = true; renderBar(); return; }
+    if (cmd === 'ATTACK' && t && equippedMoves().length) { S.attackMenu = true; renderBar(); return; }
     if (cmd === 'GROUP JOIN') return S.invite && send('GROUP JOIN ' + S.invite);
     if (!t) return;
     send(`${cmd} ${t.id}`);
@@ -783,11 +835,17 @@
       }
       case 'pick-char': S.charId = id; renderPicker(); break;
       case 'use-move': if (S.target) send(`ATTACK ${S.target.id} ${id}`); break;
+      case 'learn': send(`LEARN ${id}${cmd ? ' ' + cmd : ''}`); break;
       case 'attack-back': S.attackMenu = false; renderBar(); break;
       case 'buy': send('BUY ' + id); break;
       case 'use': send('USE ' + id); break;
       case 'sell': send('SELL ' + id); break;
     }
+  });
+
+  document.addEventListener('dblclick', (e) => {
+    const el = e.target.closest('[data-take]');
+    if (el) send('TAKE ' + el.dataset.take);
   });
 
   document.addEventListener('keydown', (e) => {
@@ -796,7 +854,8 @@
     if (tag === 'INPUT' || tag === 'TEXTAREA') { if (e.key === 'Escape') document.activeElement.blur(); return; }
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     const nav = NAV.find((n) => n[2].toLowerCase() === key);
-    if (KEYS[key] && S.room && S.room.exits[KEYS[key]]) { e.preventDefault(); send('MOVE ' + KEYS[key]); }
+    if (S.attackMenu && /^[1-9]$/.test(key)) { const m = equippedMoves()[+key - 1]; if (m && S.target && (S.status.mana ?? 0) >= m.mana_cost) send(`ATTACK ${S.target.id} ${m.id}`); }
+    else if (KEYS[key] && S.room && S.room.exits[KEYS[key]]) { e.preventDefault(); send('MOVE ' + KEYS[key]); }
     else if (nav) toggleSheet(nav[0]);
     else if (key === 'l') { S.lookAsked = true; send('LOOK'); }
     else if (key === 'Enter') { S.tab = 'log'; S.unread = 0; render(); $('#chatInput').focus(); e.preventDefault(); }

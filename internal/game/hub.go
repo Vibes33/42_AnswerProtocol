@@ -61,6 +61,9 @@ type Client struct {
 	Equipped map[world.EquipSlot]string // slot -> worn item instance id
 	Buffs    map[world.StatName]*buff   // bonus temporaires de combat (Peau de pierre, Cri de guerre…)
 	Quests   map[string]*QuestProgress
+	Moves    []string        // equipped attacks, at most combat.max_equipped_moves
+	Offers   []string        // unlocked attacks waiting for LEARN (replace one, or skip)
+	seen     map[string]bool // attacks already unlocked: equipped, offered, skipped or forgotten
 
 	talkIndex map[string]int // npc id -> next dialogue line
 
@@ -280,6 +283,8 @@ func (h *Hub) handle(c *Client, line string) {
 		h.attack(c, args)
 	case "STATUS":
 		h.status(c)
+	case "LEARN":
+		h.learn(c, args)
 	case "QUEST":
 		h.quest(c, args)
 	case "QUESTS":

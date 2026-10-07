@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"math"
 	"math/rand/v2"
+	"slices"
 	"strings"
 
+	"tap/internal/logging"
 	"tap/internal/world"
 )
 
@@ -13,7 +15,19 @@ const (
 	errMoveNotFound   = "ERR 404 MOVE_NOT_FOUND"
 	errMoveNotLearned = "ERR 403 MOVE_NOT_LEARNED"
 	errNotEnoughMana  = "ERR 408 NOT_ENOUGH_MANA"
+	errMoveNotOffered = "ERR 404 MOVE_NOT_OFFERED"
+	errMoveSlotsFull  = "ERR 409 MOVE_SLOTS_FULL"
 )
+
+// moveSlots is how many attacks a character carries into combat (combat.max_equipped_moves,
+// 3 by default). A new attack unlocked while every slot is taken waits in Offers until LEARN
+// replaces an equipped one or skips it.
+func (h *Hub) moveSlots() int {
+	if n := h.world.Config.Combat.MaxEquippedMoves; n > 0 {
+		return n
+	}
+	return 3
+}
 
 // buff is a temporary bonus (or penalty) on a stat, as a fraction: 0.5 = +50%.
 type buff struct {
@@ -41,13 +55,88 @@ func (h *Hub) chooseMove(c *Client, moveID string) (*world.Move, string) {
 	if move == nil {
 		return nil, errMoveNotFound
 	}
-	if !move.LearnableBy(c.Char, c.Level) {
+	if !slices.Contains(c.Moves, move.ID) {
 		return nil, errMoveNotLearned
 	}
 	if c.Mana < h.manaCost(c, move) {
 		return nil, errNotEnoughMana
 	}
 	return move, ""
+}
+
+// unlockMoves hands the character the attacks its level now allows: into a free slot, or
+// as an offer when the three slots are taken. Each attack is unlocked only once, so a
+// skipped or forgotten attack is never offered again. The basic attack comes first.
+func (h *Hub) unlockMoves(c *Client) []string {
+	var fresh []*world.Move
+	for _, id := range sortedKeys(h.world.Moves) {
+		if m := h.world.Moves[id]; !c.seen[id] && m.LearnableBy(c.Char, c.Level) {
+			fresh = append(fresh, m)
+		}
+	}
+	slices.SortStableFunc(fresh, func(a, b *world.Move) int {
+		if a.Learn.Level != b.Learn.Level {
+			return a.Learn.Level - b.Learn.Level
+		}
+		return boolRank(b.ID == basicAttackMove) - boolRank(a.ID == basicAttackMove)
+	})
+	var lines []string
+	for _, m := range fresh {
+		c.seen[m.ID] = true
+		if len(c.Moves) < h.moveSlots() {
+			c.Moves = append(c.Moves, m.ID)
+			lines = append(lines, fmt.Sprintf("%s learned %s", c.Name, m.Name))
+			continue
+		}
+		c.Offers = append(c.Offers, m.ID)
+		lines = append(lines, fmt.Sprintf("%s can learn %s (LEARN to replace an attack or skip it)", c.Name, m.Name))
+	}
+	return lines
+}
+
+func boolRank(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+// learn answers "LEARN <move> [<replaced-move>|skip]": takes an offered attack into a free
+// slot, in place of an equipped one (forgotten for good), or turns the offer down.
+func (h *Hub) learn(c *Client, args string) {
+	words := strings.Fields(strings.ToLower(args))
+	if len(words) == 0 {
+		c.send(errMissingArgument)
+		return
+	}
+	offer := slices.Index(c.Offers, words[0])
+	if offer < 0 {
+		c.send(errMoveNotOffered)
+		return
+	}
+	moveID := words[0]
+	switch {
+	case len(words) > 1 && words[1] == "skip":
+		c.Offers = slices.Delete(c.Offers, offer, offer+1)
+		c.send("OK skipped=" + moveID)
+	case len(words) > 1:
+		slot := slices.Index(c.Moves, words[1])
+		if slot < 0 {
+			c.send(errMoveNotFound)
+			return
+		}
+		c.Moves[slot] = moveID
+		c.Offers = slices.Delete(c.Offers, offer, offer+1)
+		c.send(fmt.Sprintf("OK learned=%s forgot=%s", moveID, words[1]))
+	case len(c.Moves) < h.moveSlots():
+		c.Moves = append(c.Moves, moveID)
+		c.Offers = slices.Delete(c.Offers, offer, offer+1)
+		c.send("OK learned=" + moveID)
+	default:
+		c.send(errMoveSlotsFull)
+		return
+	}
+	h.log.Info("move_learn", logging.Fields{"player": c.Name, "args": args, "moves": c.Moves, "offers": c.Offers})
 }
 
 // manaCost applies the class multiplier (a fighter pays less than a mage).

@@ -27,6 +27,8 @@ func (h *Hub) initPlayer(c *Client, char *world.Character) {
 	c.Equipped = map[world.EquipSlot]string{}
 	c.Quests = map[string]*QuestProgress{}
 	c.talkIndex = map[string]int{}
+	c.seen = map[string]bool{}
+	h.unlockMoves(c)
 
 	stats := h.statsOf(c)
 	c.HP, c.Mana = stats.HP, stats.Mana
@@ -61,7 +63,7 @@ func (h *Hub) grantXP(c *Client, xp int) []string {
 		c.HP, c.Mana = stats.HP, stats.Mana
 		lines = append(lines, fmt.Sprintf("%s reached level %d", c.Name, c.Level))
 	}
-	return lines
+	return append(lines, h.unlockMoves(c)...)
 }
 
 // respawn sends a defeated player back to the safe room with reduced health,

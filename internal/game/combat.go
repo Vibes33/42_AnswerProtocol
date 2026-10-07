@@ -50,7 +50,10 @@ type statusReply struct {
 	Class     string            `json:"class"`
 	Element   string            `json:"element"`
 	Moves     []moveInfo        `json:"moves"`
-	Equipment map[string]string `json:"equipment"` // slot -> item id
+	MoveSlots int               `json:"move_slots"`
+	Equipped  []string          `json:"equipped_moves"` // attack ids in slot order
+	Offers    []string          `json:"move_offers"`    // unlocked attacks waiting for LEARN
+	Equipment map[string]string `json:"equipment"`      // slot -> item id
 	Bag       []bagEntry        `json:"bag"`
 }
 
@@ -65,7 +68,9 @@ type moveInfo struct {
 	ManaCost    int     `json:"mana_cost"`
 	Accuracy    float64 `json:"accuracy"`
 	Level       int     `json:"level"`
-	Learned     bool    `json:"learned"`
+	Learned     bool    `json:"learned"`  // level reached
+	Equipped    bool    `json:"equipped"` // in one of the attack slots: usable in combat
+	Offered     bool    `json:"offered"`  // waiting for LEARN
 }
 
 func (h *Hub) status(c *Client) {
@@ -76,7 +81,7 @@ func (h *Hub) status(c *Client) {
 		Level: c.Level, XP: c.XP, XPNext: h.world.Config.Leveling.XPToNext(c.Level),
 		Gold: c.Gold, Room: c.Room,
 		Character: c.Char.Name, Class: h.world.Archetypes[c.Char.Archetype].Name, Element: string(c.Char.Type),
-		Moves: h.movesOf(c), Equipment: h.equipmentOf(c), Bag: h.bagOf(c),
+		Moves: h.movesOf(c), MoveSlots: h.moveSlots(), Equipped: append([]string{}, c.Moves...), Offers: append([]string{}, c.Offers...), Equipment: h.equipmentOf(c), Bag: h.bagOf(c),
 	}
 	h.sendJSON(c, reply)
 }
@@ -94,6 +99,7 @@ func (h *Hub) movesOf(c *Client) []moveInfo {
 			Type: string(m.Type), Category: string(m.Category),
 			Power: m.Power, ManaCost: h.manaCost(c, m), Accuracy: m.Accuracy,
 			Level: m.Learn.Level, Learned: c.Level >= m.Learn.Level,
+			Equipped: slices.Contains(c.Moves, m.ID), Offered: slices.Contains(c.Offers, m.ID),
 		})
 	}
 	slices.SortStableFunc(moves, func(a, b moveInfo) int { return a.Level - b.Level })
