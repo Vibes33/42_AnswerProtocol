@@ -17,6 +17,7 @@ type questReply struct {
 	Reward      string `json:"reward"`
 	Status      string `json:"status"`
 	Progress    string `json:"progress,omitempty"`
+	Message     string `json:"message,omitempty"` // what the NPC says (extension)
 }
 
 type questEntry struct {
@@ -45,6 +46,10 @@ func (h *Hub) talk(c *Client, query string) {
 		return
 	}
 	if npc := h.findNPC(c.Room, query); npc != nil {
+		if line := h.questLine(c, npc); line != "" {
+			c.send("OK " + line)
+			return
+		}
 		if len(npc.Dialogue) == 0 {
 			c.send("OK ...")
 			return
@@ -59,6 +64,32 @@ func (h *Hub) talk(c *Client, query string) {
 		return
 	}
 	c.send(errNPCNotFound)
+}
+
+// questLine is what an NPC says about its quests on TALK: the request of the next quest the
+// player can start, or a reminder of the one under way. Empty when no quest has dialogue.
+func (h *Hub) questLine(c *Client, npc *world.NPC) string {
+	for _, id := range npc.Quests {
+		q := h.world.Quests[id]
+		if q.Dialogue == nil {
+			continue
+		}
+		if p := c.Quests[id]; p != nil && !p.Completed && q.Dialogue.Progress != "" {
+			return q.Dialogue.Progress
+		}
+		if h.canStart(c, q) && q.Dialogue.Offer != "" {
+			return q.Dialogue.Offer
+		}
+	}
+	return ""
+}
+
+// questText returns one line of the quest's dialogue, or nothing.
+func questText(q *world.Quest, pick func(*world.QuestDialogue) string) string {
+	if q.Dialogue == nil {
+		return ""
+	}
+	return pick(q.Dialogue)
 }
 
 // creditKill advances every active "defeat" quest aimed at this monster.
@@ -134,6 +165,7 @@ func (h *Hub) quest(c *Client, query string) {
 		h.sendJSON(c, questReply{
 			QuestID: q.ID, Description: q.Description, Reward: rewardText(q.Reward),
 			Status: "completed", Progress: fmt.Sprintf("%d/%d", total, total),
+			Message: questText(q, func(d *world.QuestDialogue) string { return d.Thanks }),
 		})
 		return
 	}
@@ -147,6 +179,7 @@ func (h *Hub) quest(c *Client, query string) {
 			h.sendJSON(c, questReply{
 				QuestID: q.ID, Description: q.Description, Reward: rewardText(q.Reward),
 				Status: "active", Progress: fmt.Sprintf("0/%d", q.Objective.Count),
+				Message: questText(q, func(d *world.QuestDialogue) string { return d.Offer }),
 			})
 			return
 		}
@@ -155,6 +188,7 @@ func (h *Hub) quest(c *Client, query string) {
 			h.sendJSON(c, questReply{
 				QuestID: q.ID, Description: q.Description, Reward: rewardText(q.Reward),
 				Status: "active", Progress: fmt.Sprintf("%d/%d", done, total),
+				Message: questText(q, func(d *world.QuestDialogue) string { return d.Progress }),
 			})
 			return
 		}

@@ -1,5 +1,18 @@
 [
   {
+    "id": "quest.blob_sample",
+    "name": "A Sample of Slime",
+    "description": "Bring a Blob Jelly to Elder Rowan.",
+    "giver": "npc.elder",
+    "objective": { "kind": "fetch", "target": "item.blob_jelly", "count": 1 },
+    "reward": { "xp": 25, "gold": 10 },
+    "dialogue": {
+      "offer": "Ah, a fresh face. Before anything else, bring me a lump of Blob Jelly from the plains past the south gate. I must study what we are facing.",
+      "progress": "Any luck with that Blob Jelly? The green blobs past the south gate leave plenty behind.",
+      "thanks": "Thank you, friend! This jelly will tell me much about the creatures. Come back to me when you are ready for more."
+    }
+  },
+  {
     "id": "quest.herb_gathering",
     "name": "Herbs for the Chapel",
     "description": "Bring 3 Healing Herbs to Sister Liora.",

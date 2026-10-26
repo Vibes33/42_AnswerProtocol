@@ -62,7 +62,7 @@
     "description": "The village elder, old but sharp-eyed.",
     "roles": ["dialogue", "quest_giver"],
     "dialogue": ["Blobs have been creeping closer to the village every night.", "Something commands them. Something big."],
-    "quests": ["quest.blob_menace", "quest.blob_king"]
+    "quests": ["quest.blob_sample", "quest.blob_menace", "quest.blob_king"]
   },
   {
     "id": "npc.gate_warden",

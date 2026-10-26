@@ -109,6 +109,11 @@ and can be disabled with the server's strict mode._
 - **Merchants.** `SHOP` lists what the merchant of the room sells and what it buys back from the player;
   `BUY <item>` answers `OK bought=<item-id> gold=<gold>` and `SELL <item>` answers `OK sold=<item-id> gold=<gold>`.
 
+- **Quest dialogue.** A quest can carry its own lines (`dialogue` in `data/quests.json`: `offer`, `progress`,
+  `thanks`). `TALK` to the giver then says the request of the next quest the player can start, or a reminder
+  while it is under way, instead of the usual lines; the `QUEST` reply adds a `message` field with the request,
+  the reminder or the thanks. A plain RFC client ignores the extra field.
+
 - **Group play.** `GROUP INFO` returns the members of the player's group with their room and health.
   `EVT GROUP MOVE <player> <room-id>` tells the group when a member changes room, and
   `EVT GROUP XP <killer> <monster-id> <xp>` tells a member it received a share of experience: the XP of a

@@ -166,6 +166,8 @@
         if (v && v.quest_id) {
           S.questInfo[v.quest_id] = v;
           addLog(v.status === 'completed' ? 'QUEST ✓' : 'QUEST', `${human(v.quest_id)} — ${v.description || ''}`);
+          // Our server adds what the NPC says (request, reminder, thanks): show it in the bubble.
+          if (v.message) { S.dialogue = { name: human(arg), text: v.message }; S.tab = 'room'; addLog('TALK', `${human(arg)}: "${v.message}"`, false); }
         } else addLog('QUEST', data);
         send('QUESTS'); send('INVENTORY'); send('STATUS');
         break;
